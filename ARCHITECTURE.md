@@ -26,51 +26,113 @@ SDK de plateformes (pas de Firebase, pas d'Amplitude/Sentry-by-default, etc.).
 
 | Domaine | Choix proposé | Pourquoi |
 |---|---|---|
-| Framework | Flutter 3.32.x / Dart 3.8.x (version déjà installée en local via `fvm`) | Version stable actuelle du poste de dev. À figer dans `.fvmrc` pour que tout contributeur self-hosteur ait la même. |
-| Gestion d'état | **Riverpod** (`flutter_riverpod` + `riverpod_annotation` / codegen) | DI + state management testable sans `BuildContext`, bon fit pour une couche data/repository propre. *(À valider — tu es le senior Flutter, si tu préfères Bloc ou autre, on ajuste ici et le reste du doc suit.)* |
-| Navigation | **go_router** | Standard de facto, deep-linking simple (utile plus tard pour "ouvrir une série depuis une notif"), déclaratif, s'intègre bien avec Riverpod pour les redirections liées à l'auth. |
+| Framework | **Flutter 3.47.0 / Dart 3.13.0**, géré via `fvm` (setup `fvm flutter doctor` à finaliser sur la machine de dev) | Version cible validée par l'utilisateur. À figer dans `.fvmrc` à la racine du projet Flutter pour que tout contributeur self-hosteur ait la même. |
+| Gestion d'état | **Bloc/Cubit** (`flutter_bloc`, `bloc`, `equatable`) | Choix de l'utilisateur (senior Flutter, plus à l'aise avec Bloc). Séparation stricte events/states, bon fit avec une architecture en packages par feature (voir monorepo ci-dessous). |
+| Monorepo / gestion des features | **Melos**, un package Dart/Flutter par feature (convention `feat_xxx`, ex. `feat_auth`, `feat_catalog`, `feat_tracking`, `feat_lists`, `feat_stats`, `feat_import`), plus deux packages transverses : **`feat_ui`** (design system — widgets purement visuels, sans logique métier, ne manipulant que des types primitifs, pas de modèles de domaine) et **`core`** (le seul endroit pour du code partagé entre plusieurs `feat_xxx` — widgets, utilitaires, ou types communs qui, sinon, provoqueraient un import cyclique entre deux features) | Choix de l'utilisateur. Isole chaque feature (deps, tests, versioning) au lieu d'un simple découpage par dossiers dans une seule app ; `melos bootstrap`/`melos run` pour orchestrer build/lint/test sur tous les packages du workspace. `feat_ui` et `core` évitent que le partage de widgets/code entre features ne redevienne un couplage direct feature-à-feature. |
+| Scaffolding | **very_good_cli** (`very_good create flutter_app`, `very_good create flutter_package`) pour l'app racine et chaque package `feat_xxx` | Outil déjà installé sur la machine, choix de l'utilisateur. Génère une structure testée par défaut (lint, tests, CI templates) cohérente avec une organisation Melos. |
+| Navigation | **go_router** | Standard de facto, deep-linking simple (utile plus tard pour "ouvrir une série depuis une notif"), déclaratif. |
 | Client HTTP | **dio** | Intercepteurs pour le JWT (attache le `Authorization: Bearer`, refresh silencieux sur 401), gestion fine des erreurs réseau, upload multipart pour l'import `.zip`. |
 | Modèles / sérialisation | **freezed** + **json_serializable** | Les DTOs du backend sont typés (Swagger) ; on veut des modèles Dart immuables générés plutôt que du parsing JSON manuel, pour rester synchro avec le contrat API et détecter les breaking changes à la compilation. |
 | Stockage sécurisé | **flutter_secure_storage** | Access/refresh tokens en Keychain/Keystore, jamais en `SharedPreferences` en clair. |
 | Config d'environnement | `--dart-define` (`API_BASE_URL`) + fichier `env/` par flavor (dev/prod) | Un self-hosteur doit pouvoir pointer l'app sur *son* instance backend sans recompiler le code métier — l'URL de base n'est jamais codée en dur. |
 | Images | `cached_network_image` | Posters/backdrops TMDB hotlinkés (jamais stockés côté backend, voir README backend) — il faut un cache client pour éviter de re-télécharger à chaque scroll. |
-| Formulaires / validation | `flutter_form_builder` *(optionnel)* ou validation manuelle légère | Peu de formulaires dans le périmètre (login/register, éditer profil, créer liste) — à trancher selon préférence, pas structurant. |
+| Formulaires / validation | **formz** | Choix de l'utilisateur. S'intègre naturellement avec Bloc/Cubit (un `FormzInput` par champ, validation exposée à l'état du Cubit) pour les formulaires du périmètre (login/register, éditer profil, créer liste). |
+| Localisation | `flutter_localizations` + `gen-l10n`, **un fichier de traduction par package `feat_xxx`** (pas de fichier fourre-tout centralisé dans l'app) | Choix de l'utilisateur. Chaque feature reste autonome (traductions incluses), l'app agrège les délégués de localisation de chaque `feat_xxx` au lieu de posséder elle-même le texte des features. `fr` + `en` a minima (voir §7). |
+
+### Règles de dépendance entre packages
+
+Le monorepo Melos impose un graphe d'import strict, dans un seul sens (pas de cycle possible) :
+
+```
+                app (racine)
+        ┌─────────┼─────────────────┐
+        ▼         ▼                 ▼
+     core     feat_xxx (auth, catalog, tracking, lists, stats, import)
+        │         │  │
+        └────►feat_ui◄┘
+```
+
+- **`app`** importe tous les packages (`core`, `feat_ui`, tous les `feat_xxx`) — c'est le seul endroit
+  où tout est assemblé (DI, router, thème, agrégation des localisations).
+- **`core`** importe uniquement `feat_ui` — jamais un `feat_xxx` (sinon cycle : un `feat_xxx` qui
+  importe `core` importerait indirectement une autre feature).
+- **`feat_ui`** n'importe ni `core` ni aucun `feat_xxx` — c'est le package le plus bas du graphe,
+  strictement visuel (types primitifs uniquement), donc pas de raison métier d'importer quoi que ce
+  soit d'autre.
+- **`feat_xxx`** peut importer `core` et/ou `feat_ui`, jamais un autre `feat_xxx`, jamais `app`.
+  Si deux features ont besoin de partager quelque chose, ce partagé va dans `core` (jamais un
+  import direct feature → feature).
+
+Cette règle doit être vérifiable mécaniquement (ex. lint de dépendances Melos/`custom_lint` ou CI
+qui échoue si un `feat_xxx/pubspec.yaml` référence un autre `feat_xxx`), pas juste documentée —
+point à préciser lors du scaffolding.
 
 ## 3. Structure de dossiers
 
-Feature-first, chaque feature reflète un module backend pour garder le mapping évident :
+Monorepo Melos, convention `apps/` + `packages/` (structure standard `very_good_cli`/Melos). Un
+package par ligne du tableau §2 ; l'app racine assemble tout.
 
 ```
-lib/
-  core/
-    network/          # Dio client, intercepteur JWT/refresh, exceptions réseau typées
-    router/            # go_router config, guards (auth requise ou non)
-    storage/            # wrapper flutter_secure_storage (tokens)
-    theme/              # thème sombre + accent (voir §6), typographie, spacing
-    config/            # lecture des --dart-define (API_BASE_URL, etc.)
-    widgets/            # composants partagés (poster card, rating stars, empty states...)
-  features/
-    auth/
-      data/             # AuthApi (dio), AuthRepository
-      domain/           # modèles (User, AuthTokens)
-      presentation/     # écrans login/register, providers Riverpod
-    catalog/            # recherche + détail show/film/saison/épisode, watch-providers
-    tracking/           # follow/status, watch/unwatch, rate — "mes séries", détail série
-    lists/              # CRUD listes personnelles
-    stats/              # écran statistiques (séries/films)
-    import/              # upload export GDPR, statut du job, revue des items non matchés
-  app.dart              # MaterialApp.router, thème, providers globaux
-  main.dart             # entrypoint, bootstrap (config, storage)
-test/
-  <miroir de lib/>      # tests unitaires par feature (repositories, mapping JSON)
+app_another_tvtime_clone/
+  melos.yaml                  # scripts communs (bootstrap, analyze, test, format sur tout le repo)
+  pubspec.yaml                 # workspace pub (Dart 3.13 pub workspaces)
+  apps/
+    tvtime/                    # app Flutter racine (scaffold `very_good create flutter_app`)
+      lib/
+        app/                   # App widget : MaterialApp.router, thème, agrégation des
+                                # localizationsDelegates de chaque feat_xxx (voir §2)
+        bootstrap.dart          # init commune (config --dart-define, storage, DI des Repository)
+        main_development.dart   # entrypoints par flavor (dev/prod), cohérent very_good_cli
+        main_production.dart
+      test/
+      pubspec.yaml               # dépend de core, feat_ui, et tous les feat_xxx
+  packages/
+    core/                       # scaffold `very_good create flutter_package`
+      lib/
+        src/
+          network/               # Dio client, intercepteur JWT/refresh, exceptions typées
+          router/                 # go_router config + guards (auth requise ou non)
+          storage/                 # wrapper flutter_secure_storage (tokens)
+          config/                  # lecture des --dart-define (API_BASE_URL, etc.)
+          widgets/                  # widgets partagés à logique métier (ex: poster card qui
+                                     # sait afficher un statut de tracking) — composés à partir
+                                     # de feat_ui, jamais l'inverse
+        core.dart                    # barrel export
+      test/
+      pubspec.yaml                    # dépend uniquement de feat_ui
+    feat_ui/                     # scaffold `very_good create flutter_package`
+      lib/
+        src/
+          theme/                  # thème sombre + accent (voir §6), typographie, spacing
+          widgets/                 # boutons, cards, badges, empty/loading/error states —
+                                    # purement visuels, types primitifs uniquement
+        feat_ui.dart                # barrel export
+      test/
+      pubspec.yaml                  # ne dépend d'aucun autre package du repo
+    feat_auth/                   # un dossier par feat_xxx, même structure interne pour tous
+      lib/
+        src/
+          data/                    # AuthApi (dio), AuthRepository — parle au contrat HTTP
+          domain/                  # modèles métier immuables (User, AuthTokens)
+          presentation/             # Cubits/Blocs + écrans/widgets (login, register)
+        l10n/
+          arb/
+            feat_auth_en.arb        # traductions propres à cette feature
+            feat_auth_fr.arb
+        feat_auth.dart               # barrel export (expose aussi le localizationsDelegate)
+      test/
+      pubspec.yaml                    # dépend de core et/ou feat_ui, jamais d'un autre feat_xxx
+    feat_catalog/                # recherche + détail show/film/saison/épisode, watch-providers
+    feat_tracking/                # follow/status, watch/unwatch, rate — "mes séries", détail série
+    feat_lists/                    # CRUD listes personnelles
+    feat_stats/                     # écran statistiques (séries/films)
+    feat_import/                     # upload export GDPR, statut du job, items non matchés
 ```
 
-Chaque feature suit `data → domain → presentation` : `data/` parle au backend (dio) et ne connaît
-que le contrat HTTP, `domain/` porte les modèles métier immuables, `presentation/` ne connaît que
-Riverpod + les widgets. Une feature ne dépend jamais directement de la couche `data/` d'une autre
-feature — si besoin de partage (ex: un `Show` utilisé à la fois par `catalog` et `tracking`), le
-modèle vit dans `core/` ou dans le module qui en est propriétaire côté backend (ici `catalog`, qui
-possède le `Show`).
+Chaque `feat_xxx` suit `data → domain → presentation` (`data/` ne connaît que le contrat HTTP,
+`domain/` porte les modèles immuables, `presentation/` ne connaît que Bloc/Cubit + les widgets de
+`feat_ui`/`core`) et respecte le graphe de dépendance du §2 : jamais d'import direct vers un autre
+`feat_xxx`, jamais vers `app`. Le partage inter-features passe systématiquement par `core`.
 
 ## 4. Mapping fonctionnalités ↔ endpoints backend
 
@@ -112,12 +174,13 @@ priorité.
 - Lint : `flutter_lints` (défaut officiel) ou `very_good_analysis` si tu préfères plus strict — à
   trancher, pas structurant.
 - Tests : unitaires sur les `Repository` (mapping JSON ↔ modèle, gestion d'erreurs) et les
-  providers Riverpod métier ; pas de golden tests dans le périmètre v1 (coût d'entretien élevé
-  pour un projet solo/communautaire).
+  Cubits/Blocs métier (`bloc_test`) ; pas de golden tests dans le périmètre v1 (coût d'entretien
+  élevé pour un projet solo/communautaire).
 - Nommage fichiers : `snake_case.dart`, un fichier = une classe publique principale.
-- i18n : l'app originale est en français dans les captures (utilisateur FR) ; prévoir
-  `flutter_localizations` dès le départ (`fr` + `en`) plutôt que du texte en dur, pour rester
-  cohérent avec l'esprit "self-hostable par n'importe qui".
+- i18n : l'app originale est en français dans les captures (utilisateur FR) ; `fr` + `en` a
+  minima dès le départ (jamais de texte en dur), un fichier de traduction par package `feat_xxx`
+  (voir §2, ligne Localisation) — pour rester cohérent avec l'esprit "self-hostable par n'importe
+  qui".
 
 ## 8. Non-objectifs explicites
 
@@ -137,7 +200,7 @@ priorité.
 ## Prochaines étapes
 
 1. Tu relis/amendes ce document directement (texte libre) jusqu'à ce qu'il te convienne —
-   notamment §2 (Riverpod vs autre) et §7 (lint strict ou non).
+   notamment §3 (structure à réécrire pour le monorepo Melos) et §7 (lint strict ou non).
 2. Une fois validé, on scaffolde le projet (`flutter create`, arborescence §3, packages §2) et on
    génère les modèles Dart à partir du contrat API exact du backend (routes + DTOs détaillés,
    au-delà du résumé du §4).
