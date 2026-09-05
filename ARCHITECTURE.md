@@ -6,8 +6,8 @@ n'est pas approuvé — voir [Prochaines étapes](#prochaines-étapes).
 ## 1. Vue d'ensemble
 
 App mobile de tracking personnel de séries/films (remplaçante de TV Time, fermé), publiée sous le
-nom de marque **Playd** (voir handoff `handoffs/design_handoff_playd_brand_splash_part_2/`, qui renomme
-l'app — anciennement "Sériothèque" dans le premier prototype de design). **Ce renommage concerne
+nom de marque **Playd** (voir `handoff/`, qui documente ce nom — l'app s'appelait "Sériothèque"
+dans les toutes premières itérations de design, renommage déjà intégré). **Ce renommage concerne
 uniquement l'app Flutter** (nom affiché, package `apps/playd`, valeurs par défaut) — le backend et
 le nom du projet/repo (`another_tvtime_backend`, workspace `tvtime_clone`) ne changent pas, ce
 sont des noms techniques internes, pas la marque publique.
@@ -58,10 +58,10 @@ un vrai backend multi-tenant + une intégration de paiement, un chantier à part
 | Flavors | **3 flavors par app** : `development` / `staging` (`stg`) / `production`, scaffoldés via `very_good_cli` (`main_development.dart`/`main_staging.dart`/`main_production.dart`), chacun avec son `API_BASE_URL` par défaut, un nom d'app et un bundle id/application id suffixés (ex. `.stg`) pour installer stg et prod côte à côte sur le même appareil | Choix de l'utilisateur. Permet de tester contre un backend de staging avant une release prod, sans affecter la prod. S'applique identiquement à `playd` et `template_app` (un forkeur peut ignorer `staging` s'il n'en a pas besoin). |
 | Images | `cached_network_image` | Posters/backdrops TMDB hotlinkés (jamais stockés côté backend, voir README backend) — il faut un cache client pour éviter de re-télécharger à chaque scroll. |
 | Icônes | **Lucide** (ex. `lucide_icons_flutter`) | Fixé par le handoff (§6/§4) : le design de référence utilise le jeu Lucide, tracés inline, épaisseur 1.7–2.4. |
-| Nav bar liquid glass | **`adaptive_platform_ui: ^0.1.111`** (confirmé, décision finale — voir §6) : rendu natif Liquid Glass (UITabBar) sur iOS 26+, repli Cupertino sur iOS < 26, Material 3 sur Android, sélection automatique à l'exécution. `handoffs/design_handoff_playd_v2/` sert de **maquette de référence** (géométrie de la capsule, courbes d'animation, comportement de compression au scroll) pour configurer/styliser le composant du package au plus près — mais le rendu final vient de la lib, pas d'un `BackdropFilter` peint à la main écran par écran. | Choix explicite de l'utilisateur : le handoff est une maquette, pas la spec finale à recopier au pixel via du code custom — le produit fini doit privilégier le **meilleur rendu natif et la meilleure couverture** sur l'ensemble des OS mobiles ciblés plutôt qu'un seul rendu peint à la main partout. Le compromis assumé : le rendu peut différer légèrement d'un OS à l'autre (matériaux natifs propres à chaque plateforme) plutôt que d'être identique au pixel près partout comme le montre la maquette. |
+| Nav bar liquid glass | **`adaptive_platform_ui: ^0.1.111`** (confirmé, décision finale — voir §6) : rendu natif Liquid Glass (UITabBar) sur iOS 26+, repli Cupertino sur iOS < 26, Material 3 sur Android, sélection automatique à l'exécution. `handoff/` sert de **maquette de référence** (géométrie de la capsule, courbes d'animation, comportement de compression au scroll) pour configurer/styliser le composant du package au plus près — mais le rendu final vient de la lib, pas d'un `BackdropFilter` peint à la main écran par écran. | Choix explicite de l'utilisateur : le handoff est une maquette, pas la spec finale à recopier au pixel via du code custom — le produit fini doit privilégier le **meilleur rendu natif et la meilleure couverture** sur l'ensemble des OS mobiles ciblés plutôt qu'un seul rendu peint à la main partout. Le compromis assumé : le rendu peut différer légèrement d'un OS à l'autre (matériaux natifs propres à chaque plateforme) plutôt que d'être identique au pixel près partout comme le montre la maquette. |
 | Police | **Archivo**, embarquée en asset (`.ttf` dans `ui_kit/assets/fonts/`, déclarée via `fontFamily` dans le `pubspec.yaml` de `ui_kit`) — **pas** le package `google_fonts` en mode réseau | Fixé par le handoff (§6). Le package `google_fonts` télécharge les polices depuis les serveurs Google au premier lancement par défaut — contraire à l'esprit self-hosted/offline-friendly du projet (golden rule §1) ; embarquer le `.ttf` évite tout appel réseau et toute dépendance à un tiers pour afficher du texte. |
 | Formulaires / validation | **formz** | Choix de l'utilisateur. S'intègre naturellement avec Bloc/Cubit (un `FormzInput` par champ, validation exposée à l'état du Cubit) pour les formulaires du périmètre (login/register, éditer profil, créer liste). |
-| Splash screen | **Aucun package supplémentaire** — `CustomPainter` + `AnimationController` Flutter natifs (voir handoff `handoffs/design_handoff_playd_brand_splash_part_2/`, formules d'animation exactes fournies). Un flag de config `splashOnLaunch` (défaut `true`, désactivable — utile en tests automatisés) | Le handoff fournit les formules (vitesse de propagation, amortissement) prêtes à coder en Dart, pas de raison d'ajouter une dépendance (type Lottie/Rive) pour une animation purement géométrique — cohérent avec la golden rule (minimiser les deps). |
+| Splash screen | **Aucun package supplémentaire** — `CustomPainter` + `AnimationController` Flutter natifs (voir handoff `handoff/`, formules d'animation exactes fournies). Un flag de config `splashOnLaunch` (défaut `true`, désactivable — utile en tests automatisés) | Le handoff fournit les formules (vitesse de propagation, amortissement) prêtes à coder en Dart, pas de raison d'ajouter une dépendance (type Lottie/Rive) pour une animation purement géométrique — cohérent avec la golden rule (minimiser les deps). |
 | Localisation | `flutter_localizations` + `gen-l10n`, **un fichier de traduction par package `feat_xxx`** (pas de fichier fourre-tout centralisé dans l'app) | Choix de l'utilisateur. Chaque feature reste autonome (traductions incluses), l'app agrège les délégués de localisation de chaque `feat_xxx` au lieu de posséder elle-même le texte des features. `fr` + `en` a minima (voir §7). |
 | Documentation (README, tutoriels) | **Révisé** : pas de package de rendu Markdown, pas de docs embarquées. Chaque "carte doc" (About, futur tutoriel TMDB, futur tutoriel self-hosting) est un **`PlaydBanner`** (déjà dans le design system, voir §6) avec kicker/titre/corps écrits en dur dans `feat_hosting_presentation` (comme le fait déjà le handoff pour l'écran About) + un CTA qui ouvre l'URL GitHub **rendue** (`https://github.com/.../blob/main/docs/....md`, pas l'URL `raw.githubusercontent.com` qui affiche du Markdown brut non stylé) via **`url_launcher`** dans le navigateur système. | Choix de l'utilisateur : un vrai renderer Markdown alourdit le binaire pour un besoin ponctuel (quelques écrans de doc), alors que le texte lui-même (quelques dizaines de Ko) ne pèse rien. `url_launcher` est un package officiel, minimal, déjà quasi incontournable dans tout projet Flutter. Reproduit fidèlement ce que fait déjà le handoff (`openUrl`), sans avoir besoin d'un composant `ui_kit` dédié — `PlaydBanner` suffit, aucun nouveau composant à concevoir. |
 
@@ -97,9 +97,9 @@ Le monorepo Melos impose un graphe d'import strict, dans un seul sens (pas de cy
   dépend que de `domain/` — même règle qu'entre packages, appliquée par convention à l'intérieur
   du package puisque ce sont ici de simples dossiers, pas des unités compilées séparément.
 
-Cette règle doit être vérifiable mécaniquement (ex. lint de dépendances Melos/`custom_lint` ou CI
-qui échoue si un `feat_xxx/pubspec.yaml` référence un autre `feat_xxx`), pas juste documentée —
-point à préciser lors du scaffolding.
+Cette règle doit être vérifiable mécaniquement, pas juste documentée — voir §7, "Application
+mécanique du graphe de dépendance" (contraintes de `pubspec.yaml` dans un Dart/pub workspace,
+plutôt qu'un lint/CI qui ne détecterait la violation qu'après coup).
 
 ## 3. Structure de dossiers
 
@@ -146,7 +146,7 @@ app_another_tvtime_clone/
       test/
       pubspec.yaml                    # ne dépend d'aucun autre package du repo (feuille, comme ui_kit)
     ui_kit/                      # scaffold `very_good create flutter_package` — structure figée
-                                   # par handoffs/design_handoff_playd_design_system/README.md
+                                   # par handoff/README.md
       lib/
         src/
           theme/
@@ -180,8 +180,8 @@ app_another_tvtime_clone/
           navigation/
             glass_nav_bar.dart        # enrobe le tab bar de adaptive_platform_ui (voir §2), stylisé
                                         # avec les tokens de ui_kit — volontairement hors du design
-                                        # system pur (dépendance à une lib externe, voir handoffs/
-                                        # design_handoff_playd_design_system/README.md, §4)
+                                        # system pur (dépendance à une lib externe, voir
+                                        # handoff/README.md, §4)
           widgets/                  # widgets partagés à logique métier (ex: poster card qui
                                      # sait afficher un statut de tracking) — composés à partir
                                      # de ui_kit, jamais l'inverse
@@ -237,22 +237,16 @@ concret se fait dans l'app via `get_it`, voir §2). Jamais d'import direct vers 
 Basé sur `another_tvtime_backend/README.md` et vérifié directement contre les controllers/schema du
 backend (préfixe `/api`, JWT Bearer requis sauf `/auth/*`).
 
-**Référence visuelle** : quatre handoffs complémentaires, tous sous `app_another_tvtime_clone/
-handoffs/` —
-- `design_handoff_tvtime_legacy/` : prototype initial, tous les écrans "app connectée" (Séries,
-  Films, Explorer, Profil, fiches, listes, stats, réglages). Remplace
-  `original_projet_screenshots/` comme source de vérité visuelle.
-- `design_handoff_playd_brand_splash_part_2/` : renommage de marque **Playd** (voir §1), splash
-  screen animé, et **les écrans d'authentification qui manquaient au premier handoff** — setup/
-  premier lancement, login, register, mot de passe oublié, confirmation d'envoi, réinitialisation,
-  déconnexion (détaillés ci-dessous).
-- `design_handoff_playd_v2/` : refonte de la nav bar en **liquid glass flottante** (voir §6), version
-  consolidée des tokens de couleur/typo, et un label clarifiant (partiellement) la question de la
-  clé TMDB (voir "Écarts" ci-dessous — pas totalement résolu).
-- `design_handoff_playd_design_system/` : **le design system consolidé**, explicitement écrit comme
-  source de vérité pour `ui_kit` (tokens dark+light, typo, formes, 19 composants nommés, arborescence
-  de fichiers Flutter proposée — largement reprise telle quelle au §3). En cas de divergence avec
-  les trois handoffs précédents sur un token précis, celui-ci l'emporte — voir §6.
+**Référence visuelle** : `app_another_tvtime_clone/handoff/` — **dossier unique, évolutif**, mis à
+jour au fil de l'eau plutôt que dupliqué en plusieurs handoffs versionnés. Remplace
+`original_projet_screenshots/` comme source de vérité visuelle. Couvre à ce jour : tous les écrans
+"app connectée" (Séries, Films, Explorer, Profil, fiches, listes, stats, réglages), la marque
+**Playd** (voir §1) et son splash screen animé, le flow d'authentification complet (détaillé
+ci-dessous), la nav bar **liquid glass** flottante (voir §6), et le design system consolidé pour
+`ui_kit` (tokens dark+light, typo, formes, 19 composants nommés, arborescence de fichiers Flutter
+proposée — largement reprise telle quelle au §3). `handoff/README.md` est la référence à lire en
+premier ; `handoff/TVTime Clone.dc.html` est le prototype complet, à vérifier directement quand le
+README ne suffit pas (déjà arrivé plusieurs fois — voir "Flow d'authentification" ci-dessous).
 
 Tous "high-fidelity" (à reprendre au pixel près, sauf la nav bar — voir §6, maquette indicative
 plutôt que spec littérale) et cette section fusionne leur inventaire
@@ -260,7 +254,7 @@ d'écrans avec le contrat API.
 
 | Feature Flutter | Endpoints backend (vérifiés) | Écrans de référence (handoff) |
 |---|---|---|
-| `auth` | `POST /auth/register`, `/login`, `/refresh`, `/logout` | **Maintenant designés** dans `handoffs/design_handoff_playd_brand_splash_part_2/` — 6 écrans, voir "Flow d'authentification" ci-dessous (remplace l'ancienne sous-section "Flows manquants", résolue) |
+| `auth` | `POST /auth/register`, `/login`, `/refresh`, `/logout` | **Designés dans `handoff/`** — 7 écrans, voir "Flow d'authentification" ci-dessous |
 | `auth` (profil) | `GET/PATCH /users/me` (`displayName`, `avatarUrl`, `coverUrl`, `language`, `timezone` — **pas de champ mot de passe**, voir "Écarts" ci-dessous) | Onglet **Profil**, Réglages → Compte (nom d'utilisateur, e-mail, ID) |
 | `catalog` | `GET /catalog/shows/search`, `/shows/:tmdbId`, `/shows/:tmdbId/seasons/:n`, `/shows/:tmdbId/watch-providers`, équivalents `movies/*` — **pas de casting/bande-annonce/titres similaires** (voir "Écarts") | Onglet **Explorer** (recherche), fiche série/film (sections Où regarder ✅, casting ❌, bande-annonce ❌, similaires ❌) |
 | `tracking` | `GET /tracking/shows`, `GET/PATCH/DELETE /tracking/shows/:tmdbId` (4 booléens indépendants, voir §5), `PUT/DELETE .../rating`, `GET/POST/DELETE` watch épisode, `POST` watch saison, `POST/DELETE` watch film, `PUT/DELETE` rating film — **pas de favori/watchlist pour les films côté backend** (voir "Écarts") | **Séries et Films sont étroitement couplés côté UI** (widgets partagés, voir §3) — seule vraie divergence : le suivi par saison/épisode, propre aux séries. Onglets **Séries**/**Films** (À regarder/À voir, À venir), fiche série (Continuer à regarder, saisons dépliables), fiche film, menu `···` (Favoris, Regarder plus tard = Watchlist, Arrêter/Reprendre = Archivé, **Supprimer** = `DELETE /tracking/shows/:tmdbId`), page dédiée **Séries préférées** (= vue filtrée `isFavorite`, backend ✅) ; **Films préférés** a le même écran côté handoff mais **rien à filtrer côté backend pour l'instant** (voir "Écarts") |
@@ -275,12 +269,11 @@ notes communautaires — le backend n'expose et n'exposera aucune donnée pour �
 cette décision avec toi. Le mode cloud/abonnement, en revanche, **n'est plus hors périmètre** :
 voir "Fonctionnalité prévue, différée" ci-dessous.
 
-### Flow d'authentification (7 écrans, affiné au fil des handoffs)
+### Flow d'authentification (7 écrans)
 
-Couvert par `handoffs/design_handoff_playd_brand_splash_part_2/` puis complété par
-`handoffs/design_handoff_playd_design_system/` (qui ajoute l'écran 0 ci-dessous — vérifié
-directement dans son `TVTime Clone.dc.html`, pas seulement dans son README, qui ne le documente pas)
-:
+Couvert par `handoff/` — l'écran 0 ci-dessous n'est vérifiable que directement dans
+`handoff/TVTime Clone.dc.html` (le README du handoff ne le documente pas), à garder en tête pour la
+suite : le README seul ne suffit pas toujours, le prototype fait foi en cas de doute :
 
 0. **About / "Lisez-moi"** *(nouveau, premier écran jamais affiché, une seule fois — flag persisté
    `aboutSeen`)* : un texte de mission à la première personne expliquant pourquoi Playd existe,
@@ -311,7 +304,7 @@ directement dans son `TVTime Clone.dc.html`, pas seulement dans son README, qui 
 déconnecter ?", compte affiché, action destructive rouge vs "Rester connecté") avant d'appeler
 `POST /auth/logout` et de revenir à l'écran login.
 
-**⚠️ TMDB — amélioré mais toujours pas cohérent, vérifié dans le 4ᵉ handoff** : l'écran Réglages →
+**⚠️ TMDB — pas cohérent entre deux écrans du même handoff** : l'écran Réglages →
 **Hébergement** (le menu principal) a maintenant un vrai encart pédagogique ("Elle se renseigne sur
 le serveur, pas dans l'app", exemple `TMDB_API_KEY=votre_clé # .env du serveur`, lien externe vers
 un futur `docs/SELF_HOSTING.md`) — **exactement la bonne explication**, aucun champ de saisie sur
@@ -333,7 +326,7 @@ Voir §2 (ligne Documentation) et §3 (`feat_hosting`).
 
 **FYI, pas une décision d'archi** : Cloud Playd affiche maintenant un **essai gratuit d'un mois
 sans carte** (`trialUsed`/`trialDaysLeft`) avant de passer à l'abonnement à 3 €/mois — détail
-produit découvert dans ce 4ᵉ handoff, mentionné ici mais pas à figer, cohérent avec le fait que
+produit découvert dans le handoff, mentionné ici mais pas à figer, cohérent avec le fait que
 toute la feature abonnement reste différée (voir plus bas).
 
 ### Écarts identifiés entre le handoff et le backend actuel (à trancher)
@@ -382,15 +375,15 @@ toute la feature abonnement reste différée (voir plus bas).
   `--dart-define` comme valeur par défaut (utile pour `template_app`), mais la rendre modifiable et
   persistée localement (`shared_preferences`) depuis les réglages — voir §2, ligne Config
   d'environnement, mise à jour en conséquence.
-- **⚠️ Champ "Clé API TMDB" côté app — amélioré mais toujours pas résolu, vérifié dans les 3ᵉ et 4ᵉ
-  handoffs** : le 3ᵉ handoff ajoutait une ligne en lecture seule ("clé à configurer sur votre
-  serveur") ; le 4ᵉ va plus loin avec un vrai encart pédagogique (exemple `.env`, lien vers un
-  tutoriel) **sur l'écran Hébergement** — mais l'écran Réglages → **Serveur**, atteint depuis le
-  même menu, a **toujours** un champ de saisie `Clé API TMDB` (`type: password`) qui contredit
-  directement cet encart. Deux lectures possibles, **à trancher avec toi, pas supposé ici** :
+- **⚠️ Champ "Clé API TMDB" côté app — pas résolu, deux écrans du handoff se contredisent** :
+  l'écran Réglages → **Hébergement** a un encart pédagogique complet (exemple `.env`, lien vers un
+  tutoriel) et aucun champ de saisie — la bonne explication. Mais l'écran Réglages → **Serveur**,
+  atteint depuis le même menu, a **toujours** un champ de saisie `Clé API TMDB` (`type: password`)
+  qui contredit directement cet encart. Deux lectures possibles, **à trancher avec toi, pas supposé
+  ici** :
   1. Le champ de l'écran Serveur est un reliquat à supprimer — l'app ne demande que l'adresse du
      serveur partout, la clé TMDB se configure exclusivement via `.env`/`docker-compose` côté
-     déploiement (cohérent avec l'architecture backend actuelle, aucun changement requis). Le 4ᵉ
+     déploiement (cohérent avec l'architecture backend actuelle, aucun changement requis). Le
      handoff donne une piste concrète pour cette option : remplacer le champ par le même lien vers
      le tutoriel d'auto-hébergement que sur l'écran Hébergement.
   2. Le champ doit rester, et l'app doit réellement pouvoir configurer la clé TMDB de son propre
@@ -472,20 +465,17 @@ doit rester quatre booléens, pas un enum, pour matcher exactement le DTO
 
 ## 6. Thème
 
-**Source de vérité canonique : `handoffs/design_handoff_playd_design_system/README.md`** (4ᵉ
-handoff, explicitement écrit comme référence consolidée pour `ui_kit`) — les trois handoffs
-précédents (`tvtime_legacy`, `playd_brand_splash_part_2`, `playd_v2`) restent utiles pour voir les
-composants **en contexte d'écran**, mais quand un token ou une règle diverge entre eux, **celui du
-design system l'emporte** (c'est son rôle explicite : "Objet : source de vérité visuelle de Playd").
-Fidélité "high-fidelity" — repris au pixel/à la milliseconde près via `ui_kit` (**sauf la nav bar**,
-voir plus bas). Ne pas dupliquer l'intégralité des tableaux de tokens ici — le design system en a
-déjà une version complète, prête à l'emploi ; ce qui suit n'est qu'un résumé structurant.
+**Source de vérité : `handoff/README.md`**, explicitement écrit comme référence consolidée pour
+`ui_kit` ("Objet : source de vérité visuelle de Playd"). Fidélité "high-fidelity" — repris au
+pixel/à la milliseconde près via `ui_kit` (**sauf la nav bar**, voir plus bas). Ne pas dupliquer
+l'intégralité des tableaux de tokens ici — le handoff en a déjà une version complète, prête à
+l'emploi ; ce qui suit n'est qu'un résumé structurant.
 
 - **Thème double, dark + light, tous deux de premier plan** — correction d'une version précédente
-  de cette section qui disait "pas de mode clair dans le design de référence, non prioritaire" :
-  c'était vrai des trois premiers handoffs, mais le design system donne maintenant les **deux jeux
-  de valeurs pour les mêmes tokens** (dark canonique, light dérivé), pas un Material 3 générique en
-  roue de secours. `PlaydTheme.dark` / `PlaydTheme.light`, choix system/manuel via `ThemeMode`.
+  de cette section qui disait "pas de mode clair, non prioritaire" : le handoff donne les **deux
+  jeux de valeurs pour les mêmes tokens** (dark canonique, light dérivé), pas un Material 3
+  générique en roue de secours. `PlaydTheme.dark` / `PlaydTheme.light`, choix system/manuel via
+  `ThemeMode`.
 - **Tokens couleur, par catégorie** (noms exacts dans `PlaydColors extends ThemeExtension`, jamais
   de couleur en dur dans un widget) : `surface.*` (base/raised/sunken/inset/media), `border.*`
   (subtle/strong/track), `content.*` (primary/secondary/tertiary/muted), `brand.*` (accent
@@ -510,26 +500,22 @@ déjà une version complète, prête à l'emploi ; ce qui suit n'est qu'un résu
 - **Icônes** : Lucide (voir §2).
 - **Marque (`PlaydLogoMark`)** : un « P » de 5 carrés jaunes (grille 2×3, cellule bas-droite vide),
   rampe `brand.logoRamp.1…5` (`#ffd60f` → `#e8a30a`), **toujours posé sur son carré
-  `brand.iconCanvas` (`#2a2a2a`), jamais à nu** — précision du design system par rapport aux
-  handoffs précédents. Tailles de cellule selon contexte : 17/9/7/6 px (grand logo/auth/en-tête/
-  badges). Distinct de l'accent `#efbe4e`, qui ne change pas.
-- **⚠️ Icône d'app — divergence entre handoffs, pas résolue** : le handoff marque/splash décrit un
-  fond de trame **texturé** par cellule (`#1D1D1D`–`#3E3E3E`, dégradé radial aléatoire par carreau) ;
-  le design system dit que le P se pose sur un canevas **plat** `brand.iconCanvas` (`#2a2a2a`). Pas
-  la même chose. À trancher au scaffolding en générant l'icône — le design system étant la source
-  canonique déclarée, il l'emporte par défaut sauf préférence contraire.
+  `brand.iconCanvas` (`#2a2a2a`), jamais à nu**. Tailles de cellule selon contexte : 17/9/7/6 px
+  (grand logo/auth/en-tête/badges). Distinct de l'accent `#efbe4e`, qui ne change pas.
+- **Icône d'app** : fond `#2a2a2a` (`brand.iconCanvas`) avec une texture très subtile (dégradés
+  conic/radial à faible opacité, quasiment plate), P centré — cohérent avec `PlaydLogoMark`. À
+  générer en PNG (1024/512/192/180/120/64/48) au scaffolding, voir `handoff/Playd Icon.dc.html`.
 - **Splash screen** : inchangé (plein écran `#070707`/`#090909`, `PlaydLogoMark` fixe au centre
   cellule 42 px, animation "onde" aux formules fournies, 2600 ms ou tap pour passer). Voir §2/§3.
-- **Barre de navigation basse — "liquid glass", pas pleine largeur** : `handoffs/
-  design_handoff_playd_v2/README.md` sert de **maquette de référence visuelle**, pas de spec
-  littérale à recopier au pixel — décision explicite de l'utilisateur : le rendu final vient
-  d'**`adaptive_platform_ui`** (voir §2), pas d'un composant custom peint à la main, pour avoir le
-  meilleur rendu natif et la meilleure couverture sur l'ensemble des OS mobiles ciblés plutôt qu'un
-  seul rendu identique partout. Le design system confirme explicitement que **cette barre n'est pas
-  dans `ui_kit`** ("fournie par une librairie externe") — elle vit dans `shared/src/navigation/`
-  (voir §3). Ce que la maquette donne à viser lors de la configuration du composant :
-  - Capsule flottante centrée, largeur au contenu (pas pleine largeur, contrairement aux deux
-    premiers handoffs qui décrivaient une barre pleine largeur `#000` opaque).
+- **Barre de navigation basse — "liquid glass", pas pleine largeur** : `handoff/README.md` sert de
+  **maquette de référence visuelle**, pas de spec littérale à recopier au pixel — décision
+  explicite de l'utilisateur : le rendu final vient d'**`adaptive_platform_ui`** (voir §2), pas
+  d'un composant custom peint à la main, pour avoir le meilleur rendu natif et la meilleure
+  couverture sur l'ensemble des OS mobiles ciblés plutôt qu'un seul rendu identique partout. Le
+  handoff confirme explicitement que **cette barre n'est pas dans `ui_kit`** ("fournie par une
+  librairie externe") — elle vit dans `shared/src/navigation/` (voir §3). Ce que la maquette donne
+  à viser lors de la configuration du composant :
+  - Capsule flottante centrée, largeur au contenu (pas pleine largeur).
   - Teinte or `#efbe4e`/`rgba(239,190,78,.20)` pour l'état sélectionné, 4 onglets (icônes Lucide
     `tv`/`clapperboard`/`search`/`user`).
   - Comportement de compression au scroll (labels masqués, capsule réduite) — **à vérifier au
@@ -543,16 +529,65 @@ déjà une version complète, prête à l'emploi ; ce qui suit n'est qu'un résu
 
 ## 7. Conventions
 
-- Lint : `flutter_lints` (défaut officiel) ou `very_good_analysis` si tu préfères plus strict — à
-  trancher, pas structurant.
-- Tests : unitaires sur les `Repository` (mapping JSON ↔ modèle, gestion d'erreurs) et les
-  Cubits/Blocs métier (`bloc_test`) ; pas de golden tests dans le périmètre v1 (coût d'entretien
+Les conventions ci-dessous ont vocation à devenir, plus tard, un skill dédié pour faciliter le
+développement du projet (rappelé par l'utilisateur) — les garder concrètes et vérifiables plutôt
+que de simples intentions est donc d'autant plus important.
+
+- **Lint : `very_good_analysis`**, pas `flutter_lints` — tranché : pairing naturel avec
+  `very_good_cli` déjà retenu pour le scaffolding (même éditeur, ruleset plus strict que le défaut
+  officiel), plutôt que de mélanger deux écosystèmes d'outillage différents sans raison.
+- **Conventions de nommage Bloc/Cubit** (officielles, [bloclibrary.dev](https://bloclibrary.dev/naming-conventions/)) :
+  - Events au **passé** (`LoginSubmitted`, pas `SubmitLogin`) — un event représente quelque chose
+    qui s'est déjà produit du point de vue du Bloc/Cubit.
+  - States comme des **noms** (photographie à un instant T), pas des verbes.
+  - **Un seul style de state pour tout le projet**, pas un mélange au cas par cas : soit des
+    sous-classes (`AuthInitial`/`AuthSuccess`/`AuthFailure`), soit une classe unique + un enum de
+    statut (`AuthState { status: AuthStatus.initial/success/failure, ... }`) — à choisir au
+    scaffolding et documenter ici une fois choisi.
+  - **`sealed class`** (Dart 3, disponible en 3.13) pour les events et les states de chaque
+    Bloc/Cubit — permet un `switch` exhaustif vérifié à la compilation plutôt que des `if is` en
+    cascade ou un `default` qui masque un cas oublié.
+- **Application mécanique du graphe de dépendance entre packages** (voir §2, "Règles de
+  dépendance") : via les contraintes de `pubspec.yaml` dans un Dart/pub workspace — transforme la
+  règle "un `feat_xxx` ne doit pas importer un autre `feat_xxx`" en erreur de compilation plutôt
+  qu'en convention vérifiée seulement au lint/CI. À mettre en place dès le scaffolding, pas ajouté
+  après coup une fois que des violations existent déjà.
+- **Pattern "Module + callbacks" pour la coordination inter-features — à évaluer au scaffolding,
+  pas encore tranché** : alternative/complément à "le routeur de `shared` connaît le nom de toutes
+  les routes" (voir §2/§3, Setup → Login par ex.) — chaque feature exposerait un widget d'entrée
+  recevant des callbacks typés pour la navigation, sans jamais connaître le nom des routes des
+  autres features. Séduisant pour le découplage, mais à confronter concrètement à notre organisation
+  (`shared` connaît déjà toutes les features par construction, donc le gain est moins évident que
+  dans une architecture qui viserait du lazy-loading par feature) avant de l'adopter.
+- **Barrel file par écran**, pas seulement par package : en plus du barrel `feat_xxx.dart` déjà
+  prévu par package (voir §3), un barrel par écran dans `presentation/` (ex.
+  `presentation/login/login.dart` qui réexporte la vue + son Cubit) — prépare un éventuel
+  lazy-loading ciblé d'un écran précis si l'app grossit, sans coût aujourd'hui.
+- **Doc comments (`///`) obligatoires sur tout le `domain/` public** : interfaces `Repository`,
+  modèles/entités. Objectif précis : quelqu'un doit pouvoir comprendre le contrat d'une feature en
+  lisant seulement son `domain/`, sans ouvrir `data/`/`presentation/` — cohérent avec `domain/` qui
+  est déjà, par construction, la seule couche que toutes les autres dépendent (voir §2).
+- **Limite de taille/imbrication sur `build()`** : extraire en sous-widget au-delà d'environ 100
+  lignes ou 3-4 niveaux d'imbrication — encourage la composition (widgets nommés, testables
+  isolément) plutôt qu'un `build()` monolithique difficile à relire.
+- Tests : unitaires sur les `Repository` (mapping JSON ↔ modèle, gestion d'erreurs — mocks via
+  **`mockito`**, ex. mock d'`AuthApi`/`api_client` pour tester `AuthRepositoryImpl` sans réseau) et
+  les Cubits/Blocs métier (**`bloc_test`**, `blocTest<Cubit, State>(...)` pour asserter les
+  séquences d'états sans boilerplate) ; pas de golden tests dans le périmètre v1 (coût d'entretien
   élevé pour un projet solo/communautaire).
+- **Miroir `test/` ↔ `lib/`** : tout fichier créé dans `lib/src/...` a son équivalent
+  `test/src/..._test.dart` à la même profondeur de dossiers (ex. `lib/src/data/auth_repository.dart`
+  → `test/src/data/auth_repository_test.dart`), dans chaque package du monorepo (`feat_xxx`,
+  `shared`, `ui_kit`, `api_client`). Une divergence entre les deux arborescences est un signal
+  qu'un fichier n'est pas testé — pas une règle qui impose 100 % de couverture, mais qui rend un
+  trou visible d'un coup d'œil plutôt que caché dans un `test/` qui a dérivé de `lib/` avec le temps.
 - Nommage fichiers : `snake_case.dart`, un fichier = une classe publique principale.
-- i18n : l'app originale est en français dans les captures (utilisateur FR) ; `fr` + `en` a
-  minima dès le départ (jamais de texte en dur), un fichier de traduction par package `feat_xxx`
-  (voir §2, ligne Localisation, et §3) — pour rester cohérent avec l'esprit "self-hostable par
-  n'importe qui".
+- i18n : `fr` + `en` a minima dès le départ (jamais de texte en dur), un fichier de traduction par
+  package `feat_xxx` (voir §2, ligne Localisation, et §3). **Langue par défaut = celle du téléphone**
+  (`Locale` système, via `flutter_localizations`/`MaterialApp.supportedLocales`) ; si la langue du
+  téléphone n'a pas de traduction dans un `feat_xxx` donné, repli sur l'anglais pour cette feature
+  (pas le français) — cohérent avec l'esprit "self-hostable par n'importe qui" : l'anglais est le
+  dénominateur commun international, pas une préférence de l'auteur du projet.
 
 ## 8. Non-objectifs explicites
 
@@ -590,7 +625,7 @@ déjà une version complète, prête à l'emploi ; ce qui suit n'est qu'un résu
    iOS) avec/sans cette feature référencée quelque part dans le code de l'app. Si le gain n'est
    pas réel, documenter que le flag reste utile pour masquer l'UI/DI mais ne réduit pas la taille
    du binaire — ne pas le présenter comme un gain acquis sans l'avoir mesuré.
-4. **Côté backend**, items identifiés en fusionnant les handoffs (§4) listés séparément dans
+4. **Côté backend**, items identifiés en fusionnant le handoff (§4) listés séparément dans
    [`another_tvtime_backend/docs/flutter-handoff-backend-changes.md`](../another_tvtime_backend/docs/flutter-handoff-backend-changes.md)
    (endpoint de changement de mot de passe, compteur de complétions sur `List`, extension
    `catalog` casting/bande-annonce/similaires, endpoint `/health`, `hideWatchedEpisodes` sur
