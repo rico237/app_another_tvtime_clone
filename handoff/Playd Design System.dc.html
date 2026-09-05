@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-fc2e3233-d85a-4253-8f48-73b240163c3b/styles.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:var(--color-bg);font-family:Archivo,system-ui,sans-serif}
+*{box-sizing:border-box}
+a{color:var(--color-accent-700);text-decoration:none}
+a:hover{color:var(--color-accent)}
+button{font-family:inherit;border:0;background:none;color:inherit;padding:0}
+</style>
+</helmet>
+
+<div style="min-height:100vh;padding:52px 40px 90px;background:var(--color-bg);display:flex;flex-direction:column;align-items:center;gap:56px">
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--color-accent-700)">Playd · design system · v0.1</div>
+<div style="font:800 44px/1.02 Archivo,sans-serif;letter-spacing:-.025em;color:var(--color-text)">Tokens &amp; composants</div>
+<div style="font:400 15px/1.5 Archivo,sans-serif;color:var(--color-neutral-800);max-width:78ch;text-wrap:pretty">Source de vérité des couleurs, de la typographie et des composants utilisés par l'app Playd et son icône. Chaque token porte son nom sémantique, sa valeur en mode sombre (canonique) et en mode clair, et le nom de la constante Dart correspondante — pour un futur package melos <span style="font:600 14px/1 ui-monospace,Menlo,monospace">ui_kit</span>.</div>
+<div style="height:2px;background:var(--color-divider);margin-top:8px"></div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+<div style="padding:7px 12px;background:var(--color-text);color:var(--color-bg);font:700 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">Mode sombre = défaut</div>
+<div style="padding:7px 12px;border:1.5px solid var(--color-text);color:var(--color-text);font:700 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">Mode clair = dérivé</div>
+<div style="padding:7px 12px;border:1.5px solid var(--color-neutral-400);color:var(--color-neutral-700);font:700 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">Police unique : Archivo</div>
+<div style="padding:7px 12px;border:1.5px solid var(--color-neutral-400);color:var(--color-neutral-700);font:700 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">Rayon par défaut : 0–3 px</div>
+</div>
+</div>
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:baseline;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--color-divider)">
+<div style="font:800 11px/1 Archivo,sans-serif;letter-spacing:.18em;color:var(--color-accent-700)">01</div>
+<div style="font:800 26px/1 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Couleurs</div>
+<div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">playd_colors.dart · PlaydColors</div>
+</div>
+
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">Surfaces · sombre / clair</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000000"></div><div style="flex:1;background:#ffffff"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">surface.base</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#000000 · #ffffff</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Fond d'écran, scroller principal</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#141414"></div><div style="flex:1;background:#f5f4f2"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">surface.raised</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#141414 · #f5f4f2</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Cartes, encarts, hover de rangée</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#1c1c1c"></div><div style="flex:1;background:#ebe9e6"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">surface.sunken</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#1c1c1c · #ebe9e6</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Blocs de listes des pages de tracking</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#0f0f0f"></div><div style="flex:1;background:#f0eeeb"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">surface.inset</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#0f0f0f · #f0eeeb</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Champs de saisie, options non choisies</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#171717"></div><div style="flex:1;background:#e4e1dc"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">surface.media</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#171717 · #e4e1dc</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Réserve d'affiche / vignette vide</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#2a2a2a"></div><div style="flex:1;background:#e2dfda"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">border.subtle</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#2a2a2a · #e2dfda</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Filets de séparation, 1 px</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#444141"></div><div style="flex:1;background:#c9c5be"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">border.strong</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#444141 · #c9c5be</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Bordure de champ, bouton secondaire</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#3a3a3a"></div><div style="flex:1;background:#d5d1ca"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">border.track</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#3a3a3a · #d5d1ca</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Rail de progression, pointillé vide</div>
+</div>
+</div>
+</div>
+
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700);margin-top:8px">Contenu</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#ffffff">Aa</div><div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#141312">Aa</div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">content.primary</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#ffffff · #141312</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Titres, valeurs, libellés actifs</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#e8e6e6">Aa</div><div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#3d3a35">Aa</div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">content.secondary</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#e8e6e6 · #3d3a35</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Sous-titres, corps de texte</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#9b9797">Aa</div><div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#6b6660">Aa</div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">content.tertiary</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#9b9797 · #6b6660</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Méta, description, hint de champ</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#7d7979">Aa</div><div style="flex:1;background:#fff;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;color:#8c8781">Aa</div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">content.muted</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#7d7979 · #8c8781</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Onglet inactif, texte désactivé, chip</div>
+</div>
+</div>
+</div>
+
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700);margin-top:8px">Marque</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="height:56px;background:#efbe4e"></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.accent</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#efbe4e · identique</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Action primaire, progression, sélection</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="height:56px;background:#d9a53a"></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.accentPressed</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#d9a53a · identique</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Hover / pressed du bouton primaire</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#f6d689"></div><div style="flex:1;background:#8f6415"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.accentText</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#f6d689 · #8f6415</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Texte or lisible : lien, onglet actif</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#1c1810"></div><div style="flex:1;background:#fdf3dc"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.accentSoft</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#1c1810 · #fdf3dc</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Fond d'option sélectionnée, encart</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="height:56px;background:#201e1d"></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.onAccent</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#201e1d · identique</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Encre sur fond or (texte et icônes)</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="height:56px;display:grid;grid-template-columns:repeat(5,1fr)"><div style="background:#ffd60f"></div><div style="background:#f8c608"></div><div style="background:#f4b909"></div><div style="background:#eeae08"></div><div style="background:#e8a30a"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.logoRamp.1…5</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#ffd60f → #e8a30a</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Les 5 carrés du P, ordre de lecture</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#2a2a2a"></div><div style="flex:1;background:#2a2a2a"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.iconCanvas</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#2a2a2a · identique</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Fond de l'icône d'app (carreaux)</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#070707"></div><div style="flex:1;background:#404040"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">brand.splashTile / Crest</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#070707 · crête #404040</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Carreau du splash et crête de l'onde</div>
+</div>
+</div>
+</div>
+
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700);margin-top:8px">États &amp; sémantique</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#76d919"></div><div style="flex:1;background:#4e8f0d"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.success</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#76d919 · #4e8f0d</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Essai gratuit, série terminée, test OK</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#e5533c"></div><div style="flex:1;background:#c23a24"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.danger</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#e5533c · #c23a24</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Erreur, favori (cœur), destruction</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#3b8cff"></div><div style="flex:1;background:#1f6fe0"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.info</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#3b8cff · #1f6fe0</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Valeur cliquable d'une rangée de réglage</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#5ecb7e"></div><div style="flex:1;background:#3f9a5b"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.online</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#5ecb7e · #3f9a5b</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Pastille de synchronisation active</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#f3f2f2"></div><div style="flex:1;background:#ffffff"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">action.markSurface</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#f3f2f2 · #ffffff</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Cercle « marquer vu » (icône #605d5d)</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#1a0e0b"></div><div style="flex:1;background:#fbe9e4"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.dangerSoft</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#1a0e0b · #fbe9e4</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Fond du bandeau d'erreur</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#9d6bff"></div><div style="flex:1;background:#6d3fd9"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">state.fullCompleted</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#9d6bff · #6d3fd9</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Œuvre achevée : tout vu et plus aucune saison à venir</div>
+</div>
+</div>
+
+<div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100)">
+<div style="display:flex;height:56px"><div style="flex:1;background:#000;opacity:.72"></div><div style="flex:1;background:#000;opacity:.45"></div></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:5px">
+<div style="font:700 12px/1.1 Archivo,sans-serif;color:var(--color-text)">overlay.scrim</div>
+<div style="font:400 10.5px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-800)">#000 72 % · #000 45 %</div>
+<div style="font:400 11.5px/1.35 Archivo,sans-serif;color:var(--color-neutral-700)">Voile derrière modale et feuille</div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:baseline;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--color-divider)">
+<div style="font:800 11px/1 Archivo,sans-serif;letter-spacing:.18em;color:var(--color-accent-700)">02</div>
+<div style="font:800 26px/1 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Typographie</div>
+<div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">playd_typography.dart · PlaydText</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:0;border-top:1px solid var(--color-neutral-300)">
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">display.lg</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">800 · 34/1.04 · -.02em</div></div>
+<div style="font:800 34px/1.04 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Où vivent vos données ?</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Titre d'écran d'accueil et d'authentification</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">title.xl</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 30/1.05</div></div>
+<div style="font:700 30px/1.05 Archivo,sans-serif;color:var(--color-text)">Le Bureau des Légendes</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Titre d'une fiche série ou film</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">title.lg</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 25/1</div></div>
+<div style="font:700 25px/1 Archivo,sans-serif;color:var(--color-text)">Statistiques</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">En-tête de section cliquable (profil)</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">title.md</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 19/1</div></div>
+<div style="font:700 19px/1 Archivo,sans-serif;color:var(--color-text)">S03E05</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Code d'épisode, valeur chiffrée d'une carte</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">title.sm</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">600 · 17/1.2</div></div>
+<div style="font:600 17px/1.2 Archivo,sans-serif;color:var(--color-text)">Le Règne animal</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Titre de film en liste, libellé de rangée</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">subtitle</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">400 · 17/1.2</div></div>
+<div style="font:400 17px/1.2 Archivo,sans-serif;color:var(--color-neutral-800)">2015 · Canal+ · 5 saisons</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Sous-titre de fiche, valeur de réglage</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">body</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">400 · 15/1.45</div></div>
+<div style="font:400 15px/1.45 Archivo,sans-serif;color:var(--color-neutral-800);max-width:52ch;text-wrap:pretty">Playd fonctionne de deux façons : vous hébergez vous-même le serveur, ou vous utilisez l'instance gérée par abonnement.</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Paragraphe d'introduction, corps d'encart</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">bodySm</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">400 · 14/1.25</div></div>
+<div style="font:400 14px/1.25 Archivo,sans-serif;color:var(--color-neutral-800)">Une taupe au cœur de la DGSE</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Titre d'épisode, description de puce</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">caption</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">400 · 12.5/1.4</div></div>
+<div style="font:400 12.5px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Gratuite sur themoviedb.org, à renseigner côté serveur.</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Hint sous un champ, note de bas de carte</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">label</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">600 · 12/1 · .1em · caps</div></div>
+<div style="font:600 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text)">Adresse du serveur</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Étiquette de champ, titre de groupe</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">labelSm / kicker</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 11/1 · .14em · caps</div></div>
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-700)">Clé API TMDB</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Kicker d'encart, sur-titre accentué</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">chip</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 12/1 · .09em · caps</div></div>
+<div style="font:700 12px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--color-text)">À voir</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Chip de groupe, badge, onglet de sous-page</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">button / buttonSm</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">700 · 15 ou 13/1 · .08em · caps</div></div>
+<div style="display:flex;align-items:baseline;gap:22px"><div style="font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text)">Tester la connexion</div><div style="font:700 13px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-800)">Ouvrir le tutoriel</div></div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Libellé de bouton pilule (haut / compact)</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">navLabel</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">600 · 10.5/1 · .02em</div></div>
+<div style="font:600 10.5px/1 Archivo,sans-serif;letter-spacing:.02em;color:var(--color-text)">Séries</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Libellé sous l'icône de la tab bar</div>
+</div>
+
+<div style="display:grid;grid-template-columns:190px 1fr 240px;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--color-neutral-300)">
+<div><div style="font:700 12px/1.2 Archivo,sans-serif;color:var(--color-text)">mono</div><div style="font:400 11px/1.3 ui-monospace,Menlo,monospace;color:var(--color-neutral-700)">600 · 12.5/1.4 · monospace</div></div>
+<div style="font:600 12.5px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">TMDB_API_KEY=votre_cle</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Extrait de configuration, adresse de serveur</div>
+</div>
+</div>
+</div>
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:baseline;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--color-divider)">
+<div style="font:800 11px/1 Archivo,sans-serif;letter-spacing:.18em;color:var(--color-accent-700)">03</div>
+<div style="font:800 26px/1 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Espacement, rayons, ombres, mouvement</div>
+<div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">playd_tokens.dart</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:26px">
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">space</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:4px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">xs · 4</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:8px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">sm · 8</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:12px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">md · 12</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:16px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">lg · 16 — gouttière écran</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:24px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">xl · 24</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="height:10px;width:34px;background:var(--color-accent)"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">2xl · 34</div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">radius</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;background:var(--color-neutral-300);border-radius:0"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">none · 0 — défaut</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;background:var(--color-neutral-300);border-radius:3px"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">xs · 3 — cartes de liste</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;background:var(--color-neutral-300);border-radius:6px"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">sm · 6 — vignette de grille</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;background:var(--color-neutral-300);border-radius:10px"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">md · 10 — carte de stat</div></div>
+<div style="display:flex;align-items:center;gap:10px"><div style="width:26px;height:26px;background:var(--color-neutral-300);border-radius:999px"></div><div style="font:400 11.5px/1 ui-monospace,Menlo,monospace;color:var(--color-text)">pill · 999 — boutons, verre</div></div>
+
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">elevation</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:30px;background:#141414;box-shadow:0 4px 12px rgba(0,0,0,.28)"></div><div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-text)">e1 · 0 4 12 / 28 %</div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:30px;background:#141414;box-shadow:0 14px 34px rgba(0,0,0,.55)"></div><div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-text)">e2 · 0 14 34 / 55 %<br>tab bar de verre</div></div>
+<div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:30px;background:#141414;box-shadow:inset 0 .8px 0 rgba(255,255,255,.34),inset 0 0 0 .5px rgba(255,255,255,.14)"></div><div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-text)">glass.edge<br>liseré interne</div></div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">motion</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="font:400 11.5px/1.45 ui-monospace,Menlo,monospace;color:var(--color-text)">fast · 250 ms · ease<br><span style="color:var(--color-neutral-700)">opacité, couleur d'icône</span></div>
+<div style="font:400 11.5px/1.45 ui-monospace,Menlo,monospace;color:var(--color-text)">base · 300 ms · ease<br><span style="color:var(--color-neutral-700)">états de bouton</span></div>
+<div style="font:400 11.5px/1.45 ui-monospace,Menlo,monospace;color:var(--color-text)">glass · 420 ms<br>cubic(.22,1,.36,1)<br><span style="color:var(--color-neutral-700)">compression de la tab bar</span></div>
+<div style="font:400 11.5px/1.45 ui-monospace,Menlo,monospace;color:var(--color-text)">spring · 520 ms<br>cubic(.34,1.42,.42,1)<br><span style="color:var(--color-neutral-700)">pastille de sélection</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:0">
+<div style="display:flex;align-items:baseline;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--color-divider)">
+<div style="font:800 11px/1 Archivo,sans-serif;letter-spacing:.18em;color:var(--color-accent-700)">04</div>
+<div style="font:800 26px/1 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Composants</div>
+<div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700)">ui_kit/lib/src/components</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;padding:14px 0 10px">
+<div></div>
+<div style="font:700 10px/1 Archivo,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-700)">Sombre — canonique</div>
+<div style="font:700 10px/1 Archivo,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--color-neutral-700)">Clair</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydButton</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">variant: primary · secondary<br>· ghost · danger</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Pilule 999, libellé caps .08em, hauteur ≥ 44. Icône optionnelle en fin de libellé.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-direction:column;gap:10px">
+<button style="width:100%;background:#efbe4e;border-radius:999px;padding:16px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#201e1d" style-hover="background:#d9a53a">Continuer</button>
+<button style="width:100%;border:2px solid #fff;border-radius:999px;padding:15px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff" style-hover="background:#fff;color:#000">Parcourir les films</button>
+<button style="width:100%;border:1.5px solid #444141;border-radius:999px;padding:15px 18px;display:flex;align-items:center;justify-content:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#fff" style-hover="background:#141414">Tester la connexion</button>
+<button style="width:100%;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#f6d689" style-hover="color:#fff">Voir l'abonnement</button>
+<button style="width:100%;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#e5533c" style-hover="color:#ff7a63">Résilier l'abonnement</button>
+<div style="display:flex;gap:10px;align-items:center">
+<button style="flex:1;background:#efbe4e;opacity:.45;border-radius:999px;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#201e1d">Désactivé</button>
+<button style="width:44px;height:44px;border:1.5px solid #444141;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#fff" style-hover="background:#141414"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:10px">
+<button style="width:100%;background:#efbe4e;border-radius:999px;padding:16px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#201e1d" style-hover="background:#d9a53a">Continuer</button>
+<button style="width:100%;border:2px solid #141312;border-radius:999px;padding:15px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#141312" style-hover="background:#141312;color:#fff">Parcourir les films</button>
+<button style="width:100%;border:1.5px solid #c9c5be;border-radius:999px;padding:15px 18px;display:flex;align-items:center;justify-content:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#141312" style-hover="background:#f5f4f2">Tester la connexion</button>
+<button style="width:100%;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#8f6415" style-hover="color:#141312">Voir l'abonnement</button>
+<button style="width:100%;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 15px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#c23a24" style-hover="color:#8f2314">Résilier l'abonnement</button>
+<div style="display:flex;gap:10px;align-items:center">
+<button style="flex:1;background:#efbe4e;opacity:.45;border-radius:999px;padding:14px 18px;display:flex;align-items:center;justify-content:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#201e1d">Désactivé</button>
+<button style="width:44px;height:44px;border:1.5px solid #c9c5be;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#141312" style-hover="background:#f5f4f2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydChip · PlaydBadge</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">group · outline · accent<br>· premiere · count · pill 999</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Tout est entièrement arrondi : chips et badges en pilule 999, badge compteur en cercle parfait.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<div style="background:#7d7979;color:#fff;padding:5px 14px;border-radius:999px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase">À voir</div>
+<div style="display:inline-flex;align-items:center;gap:4px;border:1.5px solid #fff;border-radius:999px;padding:4px 12px"><div style="font:700 11.5px/1 Archivo,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#fff">Kaamelott</div><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+<div style="border:1.5px solid #fff;border-radius:999px;padding:3px 10px;font:700 10px/1 Archivo,sans-serif;letter-spacing:.09em;color:#fff">PREMIERE</div>
+<div style="background:#efbe4e;color:#201e1d;border-radius:999px;padding:5px 12px;font:800 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">1 mois offert</div>
+<div style="width:22px;height:22px;border-radius:50%;background:#efbe4e;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.06em;color:#76d919">3 runs</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<div style="background:#8c8781;color:#fff;padding:5px 14px;border-radius:999px;font:700 12px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase">À voir</div>
+<div style="display:inline-flex;align-items:center;gap:4px;border:1.5px solid #141312;border-radius:999px;padding:4px 12px"><div style="font:700 11.5px/1 Archivo,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#141312">Kaamelott</div><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#141312" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+<div style="border:1.5px solid #141312;border-radius:999px;padding:3px 10px;font:700 10px/1 Archivo,sans-serif;letter-spacing:.09em;color:#141312">PREMIERE</div>
+<div style="background:#efbe4e;color:#201e1d;border-radius:999px;padding:5px 12px;font:800 10px/1 Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase">1 mois offert</div>
+<div style="width:22px;height:22px;border-radius:50%;background:#efbe4e;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.06em;color:#4e8f0d">3 runs</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydTextField</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">label · value · hint<br>· obscure · focused · error</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Étiquette caps au-dessus, champ à rayon 3, hint en content.tertiary.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-direction:column;gap:16px">
+<div>
+<div style="font:600 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#9b9797;margin-bottom:9px">Adresse du serveur</div>
+<div style="background:#0f0f0f;border:1.5px solid #444141;border-radius:3px;padding:15px 16px;font:400 16px/1.2 Archivo,sans-serif;color:#fff">http://localhost:8080</div>
+<div style="font:400 12.5px/1.4 Archivo,sans-serif;color:#7d7979;margin-top:8px">Exemple : https://playd.mondomaine.fr</div>
+</div>
+<div>
+<div style="font:600 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#9b9797;margin-bottom:9px">Clé API TMDB (côté serveur)</div>
+<div style="background:#0f0f0f;border:1.5px solid #efbe4e;border-radius:3px;padding:15px 16px;font:400 16px/1.2 Archivo,sans-serif;color:#fff">••••••••••••••••</div>
+</div>
+<div style="display:flex;align-items:flex-start;gap:10px;border-left:3px solid #e5533c;border-radius:3px;padding:10px 12px;background:#1a0e0b">
+<div style="font:400 13.5px/1.4 Archivo,sans-serif;color:#e0674f">Adresse incomplète.</div>
+</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:16px">
+<div>
+<div style="font:600 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6b6660;margin-bottom:9px">Adresse du serveur</div>
+<div style="background:#f0eeeb;border:1.5px solid #c9c5be;border-radius:3px;padding:15px 16px;font:400 16px/1.2 Archivo,sans-serif;color:#141312">http://localhost:8080</div>
+<div style="font:400 12.5px/1.4 Archivo,sans-serif;color:#8c8781;margin-top:8px">Exemple : https://playd.mondomaine.fr</div>
+</div>
+<div>
+<div style="font:600 12px/1 Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#6b6660;margin-bottom:9px">Clé API TMDB (côté serveur)</div>
+<div style="background:#f0eeeb;border:1.5px solid #d9a53a;border-radius:3px;padding:15px 16px;font:400 16px/1.2 Archivo,sans-serif;color:#141312">••••••••••••••••</div>
+</div>
+<div style="display:flex;align-items:flex-start;gap:10px;border-left:3px solid #c23a24;border-radius:3px;padding:10px 12px;background:#fbe9e4">
+<div style="font:400 13.5px/1.4 Archivo,sans-serif;color:#96301d">Adresse incomplète.</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydSwitch · PlaydRadio · PlaydWatchDot</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">on / off · selected<br>· watched (success) / unwatched</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Le cercle de 42 px « marquer vu » est la cible tactile la plus fréquente de l'app.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-wrap:wrap;gap:22px;align-items:center">
+<div style="width:50px;height:30px;border-radius:999px;background:#efbe4e;display:flex;align-items:center;justify-content:flex-end;padding:3px"><div style="width:24px;height:24px;border-radius:50%;background:#fff"></div></div>
+<div style="width:50px;height:30px;border-radius:999px;background:#3a3a3a;display:flex;align-items:center;padding:3px"><div style="width:24px;height:24px;border-radius:50%;background:#9b9797"></div></div>
+<div style="width:24px;height:24px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;border-radius:50%;background:#efbe4e"></div></div>
+<div style="width:24px;height:24px;border-radius:50%;border:2px solid #444141"></div>
+<div style="width:42px;height:42px;border-radius:50%;background:#f3f2f2;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#605d5d" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+<div style="width:42px;height:42px;border-radius:50%;background:#76d919;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-wrap:wrap;gap:22px;align-items:center">
+<div style="width:50px;height:30px;border-radius:999px;background:#efbe4e;display:flex;align-items:center;justify-content:flex-end;padding:3px"><div style="width:24px;height:24px;border-radius:50%;background:#fff"></div></div>
+<div style="width:50px;height:30px;border-radius:999px;background:#d5d1ca;display:flex;align-items:center;padding:3px"><div style="width:24px;height:24px;border-radius:50%;background:#fff"></div></div>
+<div style="width:24px;height:24px;border-radius:50%;border:2px solid #141312;display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;border-radius:50%;background:#d9a53a"></div></div>
+<div style="width:24px;height:24px;border-radius:50%;border:2px solid #c9c5be"></div>
+<div style="width:42px;height:42px;border-radius:50%;background:#ebe9e6;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8c8781" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+<div style="width:42px;height:42px;border-radius:50%;background:#76d919;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydGlassTabs</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">sticky · blur 22 · sat 180<br>indicateur 3 px</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Sous-onglets des pages de tracking : verre translucide, le contenu passe dessous.</div>
+</div>
+<div style="background:#000;padding:0">
+<div style="display:flex;background:rgba(6,6,6,.62);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:inset 0 -0.5px 0 rgba(255,255,255,.10)">
+<div style="flex:1;padding:14px 0 12px;text-align:center;font:700 14px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#fff;border-bottom:3px solid #fff">À voir</div>
+<div style="flex:1;padding:14px 0 12px;text-align:center;font:700 14px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#7d7979;border-bottom:3px solid transparent">À venir</div>
+</div>
+<div style="padding:16px;font:400 14px/1.4 Archivo,sans-serif;color:#9b9797">Contenu défilant sous la barre</div>
+</div>
+<div style="background:#fff;padding:0">
+<div style="display:flex;background:rgba(255,255,255,.66);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:inset 0 -0.5px 0 rgba(0,0,0,.10)">
+<div style="flex:1;padding:14px 0 12px;text-align:center;font:700 14px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#141312;border-bottom:3px solid #141312">À voir</div>
+<div style="flex:1;padding:14px 0 12px;text-align:center;font:700 14px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#8c8781;border-bottom:3px solid transparent">À venir</div>
+</div>
+<div style="padding:16px;font:400 14px/1.4 Archivo,sans-serif;color:#6b6660">Contenu défilant sous la barre</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydSectionHeader · PlaydSettingRow</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">title + chevron · label/value<br>· toggle · danger</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Rangées de 56–64 px, filet 1 px entre elles, valeur cliquable en state.info.</div>
+</div>
+<div style="background:#000;padding:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px">
+<div style="font:700 25px/1 Archivo,sans-serif;color:#fff">Listes</div>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #2a2a2a">
+<div style="font:400 17px/1.2 Archivo,sans-serif;color:#fff">Serveur</div>
+<div style="display:flex;align-items:center;gap:8px"><div style="font:400 15px/1.2 Archivo,sans-serif;color:#3b8cff">localhost:8080</div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7d7979" stroke-width="2.6"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #2a2a2a">
+<div style="min-width:0"><div style="font:400 17px/1.2 Archivo,sans-serif;color:#fff">Notifications de diffusion</div><div style="font:400 13.5px/1.35 Archivo,sans-serif;color:#9b9797;margin-top:5px">Un rappel le soir de la sortie</div></div>
+<div style="width:50px;height:30px;border-radius:999px;background:#efbe4e;display:flex;align-items:center;justify-content:flex-end;padding:3px;flex:none"><div style="width:24px;height:24px;border-radius:50%;background:#fff"></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #2a2a2a">
+<div style="font:400 17px/1.2 Archivo,sans-serif;color:#e5533c">Supprimer le compte</div>
+</div>
+</div>
+<div style="background:#fff;padding:16px">
+<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px">
+<div style="font:700 25px/1 Archivo,sans-serif;color:#141312">Listes</div>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#141312" stroke-width="2.6"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #e2dfda">
+<div style="font:400 17px/1.2 Archivo,sans-serif;color:#141312">Serveur</div>
+<div style="display:flex;align-items:center;gap:8px"><div style="font:400 15px/1.2 Archivo,sans-serif;color:#1f6fe0">localhost:8080</div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8c8781" stroke-width="2.6"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #e2dfda">
+<div style="min-width:0"><div style="font:400 17px/1.2 Archivo,sans-serif;color:#141312">Notifications de diffusion</div><div style="font:400 13.5px/1.35 Archivo,sans-serif;color:#6b6660;margin-top:5px">Un rappel le soir de la sortie</div></div>
+<div style="width:50px;height:30px;border-radius:999px;background:#efbe4e;display:flex;align-items:center;justify-content:flex-end;padding:3px;flex:none"><div style="width:24px;height:24px;border-radius:50%;background:#fff"></div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 0;border-top:1px solid #e2dfda">
+<div style="font:400 17px/1.2 Archivo,sans-serif;color:#c23a24">Supprimer le compte</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydMediaRow</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">show · episode · movie<br>trailing: markWatched</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Affiche 100 px, colonne texte, action 66 px. Rayon 3, fond surface.base sur surface.sunken.</div>
+</div>
+<div style="background:#1c1c1c;padding:12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:stretch;background:#000;border-radius:3px;overflow:hidden">
+<div style="width:74px;flex:none;background:#171717"></div>
+<div style="flex:1;min-width:0;padding:11px 8px 11px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+<div style="display:inline-flex;align-items:center;gap:4px;border:1.5px solid #fff;border-radius:999px;padding:4px 12px"><div style="font:700 11.5px/1 Archivo,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#fff">Kaamelott</div><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+<div style="display:flex;align-items:baseline;gap:6px"><div style="font:700 19px/1 Archivo,sans-serif;color:#fff">S03E05</div><div style="font:600 12px/1 Archivo,sans-serif;color:#9b9797">+ 42 à voir</div></div>
+<div style="font:400 14px/1.25 Archivo,sans-serif;color:#e8e6e6">Le Cas Yvain</div>
+</div>
+<div style="flex:none;width:66px;display:flex;align-items:center;justify-content:center"><div style="width:42px;height:42px;border-radius:50%;background:#f3f2f2;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#605d5d" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+</div>
+<div style="display:flex;align-items:stretch;background:#000;border-radius:3px;overflow:hidden">
+<div style="width:74px;flex:none;background:#171717"></div>
+<div style="flex:1;min-width:0;padding:13px 8px 13px 14px;display:flex;flex-direction:column;gap:5px;align-items:flex-start">
+<div style="font:600 17px/1.2 Archivo,sans-serif;color:#fff">Le Règne animal</div>
+<div style="font:400 13px/1.2 Archivo,sans-serif;color:#9b9797">2023 · 2 h 08 · Fantastique</div>
+</div>
+<div style="flex:none;width:66px;display:flex;align-items:center;justify-content:center"><div style="width:42px;height:42px;border-radius:50%;background:#76d919;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+</div>
+</div>
+<div style="background:#ebe9e6;padding:12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:stretch;background:#fff;border-radius:3px;overflow:hidden">
+<div style="width:74px;flex:none;background:#e4e1dc"></div>
+<div style="flex:1;min-width:0;padding:11px 8px 11px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+<div style="display:inline-flex;align-items:center;gap:4px;border:1.5px solid #141312;border-radius:999px;padding:4px 12px"><div style="font:700 11.5px/1 Archivo,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#141312">Kaamelott</div><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#141312" stroke-width="3"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+<div style="display:flex;align-items:baseline;gap:6px"><div style="font:700 19px/1 Archivo,sans-serif;color:#141312">S03E05</div><div style="font:600 12px/1 Archivo,sans-serif;color:#6b6660">+ 42 à voir</div></div>
+<div style="font:400 14px/1.25 Archivo,sans-serif;color:#3d3a35">Le Cas Yvain</div>
+</div>
+<div style="flex:none;width:66px;display:flex;align-items:center;justify-content:center"><div style="width:42px;height:42px;border-radius:50%;background:#ebe9e6;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8c8781" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+</div>
+<div style="display:flex;align-items:stretch;background:#fff;border-radius:3px;overflow:hidden">
+<div style="width:74px;flex:none;background:#e4e1dc"></div>
+<div style="flex:1;min-width:0;padding:13px 8px 13px 14px;display:flex;flex-direction:column;gap:5px;align-items:flex-start">
+<div style="font:600 17px/1.2 Archivo,sans-serif;color:#141312">Le Règne animal</div>
+<div style="font:400 13px/1.2 Archivo,sans-serif;color:#6b6660">2023 · 2 h 08 · Fantastique</div>
+</div>
+<div style="flex:none;width:66px;display:flex;align-items:center;justify-content:center"><div style="width:42px;height:42px;border-radius:50%;background:#76d919;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div></div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydPosterTile · PlaydProgressBar</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">ratio 2/3 · rayon 6<br>progress: inProgress · seenOngoing<br>· fullCompleted · archived</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Aucun badge d'angle : l'état se lit uniquement sur le rail de 6 px en pied. En cours = accent or ; tout vu mais série encore en production = success ; tout vu et œuvre achevée = fullCompleted violet ; suivi arrêté ou archivé = danger.</div>
+</div>
+<div style="background:#000;padding:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#171717;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#d9d6d6;text-shadow:0 1px 6px rgba(0,0,0,.9)">Kaamelott</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#3a3a3a"><div style="height:6px;background:#efbe4e;width:62%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9b9797">En cours · 62 %</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#171717;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#d9d6d6;text-shadow:0 1px 6px rgba(0,0,0,.9)">One Piece</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#3a3a3a"><div style="height:6px;background:#76d919;width:100%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9b9797">Tout vu · en production</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#171717;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#d9d6d6;text-shadow:0 1px 6px rgba(0,0,0,.9)">Le Bureau des Légendes</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#3a3a3a"><div style="height:6px;background:#9d6bff;width:100%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9b9797">Achevée</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#171717;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#d9d6d6;text-shadow:0 1px 6px rgba(0,0,0,.9)">Emily in Paris</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#3a3a3a"><div style="height:6px;background:#e5533c;width:38%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9b9797">Suivi arrêté</div>
+</div>
+</div>
+<div style="background:#fff;padding:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#e4e1dc;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#3d3a35">Kaamelott</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#d5d1ca"><div style="height:6px;background:#d9a53a;width:62%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6b6660">En cours · 62 %</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#e4e1dc;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#3d3a35">One Piece</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#d5d1ca"><div style="height:6px;background:#4e8f0d;width:100%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6b6660">Tout vu · en production</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#e4e1dc;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#3d3a35">Le Bureau des Légendes</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#d5d1ca"><div style="height:6px;background:#6d3fd9;width:100%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6b6660">Achevée</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="aspect-ratio:2/3;position:relative;background:#e4e1dc;border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;padding:8px 8px 22px">
+<div style="font:800 11px/1.1 Archivo,sans-serif;text-transform:uppercase;color:#3d3a35">Emily in Paris</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:#d5d1ca"><div style="height:6px;background:#c23a24;width:38%"></div></div>
+</div>
+<div style="font:600 9.5px/1.25 Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#6b6660">Suivi arrêté</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydStatCard · PlaydListCard</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">stat: label + parts[]<br>list: name · why · count · bar</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Carte de stat : rayon 10, bordure strong, en-tête à filet. Carte de liste : 152×146, rayon 3.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;gap:10px;flex-wrap:wrap">
+<div style="min-width:200px;border:1px solid #444141;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #444141"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="7" width="20" height="14"></rect><polyline points="17 2 12 7 7 2"></polyline></svg><div style="font:500 15px/1.2 Archivo,sans-serif;color:#fff">Temps de séries</div></div>
+<div style="display:flex;gap:18px;padding:14px">
+<div><div style="font:700 26px/1 Archivo,sans-serif;color:#fff">11</div><div style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#e8e6e6;margin-top:5px">Mois</div></div>
+<div><div style="font:700 26px/1 Archivo,sans-serif;color:#fff">4</div><div style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#e8e6e6;margin-top:5px">Jours</div></div>
+</div>
+</div>
+<div style="width:152px;height:146px;background:#141414;border:1.5px solid #2a2a2a;border-radius:3px;padding:13px;display:flex;flex-direction:column;justify-content:space-between" style-hover="border-color:#efbe4e">
+<div><div style="font:600 15.5px/1.2 Archivo,sans-serif;color:#fff">Dimanche pluie</div><div style="font:400 12.5px/1.35 Archivo,sans-serif;color:#7d7979;margin-top:6px">Rien de triste, rien de long</div></div>
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#9b9797">4 / 9</div><div style="font:700 11px/1 Archivo,sans-serif;color:#76d919">2 runs</div></div>
+<div style="height:4px;background:#2a2a2a"><div style="height:4px;background:#efbe4e;width:44%"></div></div>
+</div>
+</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;gap:10px;flex-wrap:wrap">
+<div style="min-width:200px;border:1px solid #c9c5be;border-radius:10px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid #c9c5be"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#141312" stroke-width="2"><rect x="2" y="7" width="20" height="14"></rect><polyline points="17 2 12 7 7 2"></polyline></svg><div style="font:500 15px/1.2 Archivo,sans-serif;color:#141312">Temps de séries</div></div>
+<div style="display:flex;gap:18px;padding:14px">
+<div><div style="font:700 26px/1 Archivo,sans-serif;color:#141312">11</div><div style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d3a35;margin-top:5px">Mois</div></div>
+<div><div style="font:700 26px/1 Archivo,sans-serif;color:#141312">4</div><div style="font:600 11px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#3d3a35;margin-top:5px">Jours</div></div>
+</div>
+</div>
+<div style="width:152px;height:146px;background:#f5f4f2;border:1.5px solid #e2dfda;border-radius:3px;padding:13px;display:flex;flex-direction:column;justify-content:space-between" style-hover="border-color:#d9a53a">
+<div><div style="font:600 15.5px/1.2 Archivo,sans-serif;color:#141312">Dimanche pluie</div><div style="font:400 12.5px/1.35 Archivo,sans-serif;color:#8c8781;margin-top:6px">Rien de triste, rien de long</div></div>
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font:500 12px/1 Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#6b6660">4 / 9</div><div style="font:700 11px/1 Archivo,sans-serif;color:#4e8f0d">2 runs</div></div>
+<div style="height:4px;background:#e2dfda"><div style="height:4px;background:#d9a53a;width:44%"></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydBanner</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">tone: accent · success<br>· danger · info</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Filet gauche 3 px de la tonalité, kicker caps, corps, CTA optionnel. Bloc mono pour la config.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="border-left:3px solid #efbe4e;border-radius:3px;background:#141414;padding:16px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#efbe4e">Clé API TMDB</div>
+<div style="font:700 18px/1.2 Archivo,sans-serif;color:#fff;margin-top:9px">Elle se renseigne sur le serveur</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#bab6b6;margin-top:9px">Votre serveur interroge TMDB et met en cache ; la clé ne quitte jamais sa configuration.</div>
+<div style="margin-top:12px;background:#0b0b0b;border:1px solid #2a2a2a;border-radius:3px;padding:11px 12px;font:600 12.5px/1.4 ui-monospace,Menlo,monospace;color:#f6d689">TMDB_API_KEY=votre_cle</div>
+</div>
+<div style="border-left:3px solid #76d919;border-radius:3px;background:#141414;padding:16px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#76d919">Essai gratuit</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#bab6b6;margin-top:9px">Un mois offert, sans carte bancaire.</div>
+</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="border-left:3px solid #d9a53a;border-radius:3px;background:#f5f4f2;padding:16px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8f6415">Clé API TMDB</div>
+<div style="font:700 18px/1.2 Archivo,sans-serif;color:#141312;margin-top:9px">Elle se renseigne sur le serveur</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#3d3a35;margin-top:9px">Votre serveur interroge TMDB et met en cache ; la clé ne quitte jamais sa configuration.</div>
+<div style="margin-top:12px;background:#f0eeeb;border:1px solid #e2dfda;border-radius:3px;padding:11px 12px;font:600 12.5px/1.4 ui-monospace,Menlo,monospace;color:#8f6415">TMDB_API_KEY=votre_cle</div>
+</div>
+<div style="border-left:3px solid #4e8f0d;border-radius:3px;background:#f5f4f2;padding:16px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#3f7a0a">Essai gratuit</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#3d3a35;margin-top:9px">Un mois offert, sans carte bancaire.</div>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydDialog · PlaydToast · PlaydEmptyState</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">dialog: title/body/actions<br>toast · empty (dashed)</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Modale sur voile 72 %, filet supérieur 3 px de la tonalité. Toast pilule centré, 2 s.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="background:rgba(0,0,0,.72);padding:16px;border:1px solid #2a2a2a">
+<div style="background:#161616;border-top:3px solid #efbe4e;border-radius:3px;padding:20px 18px">
+<div style="font:800 20px/1.15 Archivo,sans-serif;color:#fff">Nouvelle source de données</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#bab6b6;margin-top:10px">Playd bascule sur l'API TMDB v4. Vos listes et vos épisodes vus sont conservés.</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:18px">
+<div style="background:#efbe4e;border-radius:999px;padding:15px;text-align:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#201e1d">J'ai compris</div>
+<div style="padding:12px;text-align:center;font:600 13px/1 Archivo,sans-serif;color:#9b9797">Plus tard</div>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:center"><div style="background:#f3f2f2;color:#201e1d;border-radius:999px;padding:12px 20px;font:600 13px/1 Archivo,sans-serif">Liste copiée — collez-la où vous voulez</div></div>
+<div style="border:1px dashed #3a3a3a;border-radius:3px;padding:16px;font:400 13px/1.4 Archivo,sans-serif;color:#7d7979">Rien d'épinglé pour l'instant. Touchez le cœur sur une série.</div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;flex-direction:column;gap:14px">
+<div style="background:rgba(0,0,0,.45);padding:16px;border:1px solid #e2dfda">
+<div style="background:#fff;border-top:3px solid #d9a53a;border-radius:3px;padding:20px 18px">
+<div style="font:800 20px/1.15 Archivo,sans-serif;color:#141312">Nouvelle source de données</div>
+<div style="font:400 14px/1.45 Archivo,sans-serif;color:#3d3a35;margin-top:10px">Playd bascule sur l'API TMDB v4. Vos listes et vos épisodes vus sont conservés.</div>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:18px">
+<div style="background:#efbe4e;border-radius:999px;padding:15px;text-align:center;font:700 13px/1 Archivo,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#201e1d">J'ai compris</div>
+<div style="padding:12px;text-align:center;font:600 13px/1 Archivo,sans-serif;color:#6b6660">Plus tard</div>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:center"><div style="background:#201e1d;color:#fff;border-radius:999px;padding:12px 20px;font:600 13px/1 Archivo,sans-serif">Liste copiée — collez-la où vous voulez</div></div>
+<div style="border:1px dashed #c9c5be;border-radius:3px;padding:16px;font:400 13px/1.4 Archivo,sans-serif;color:#8c8781">Rien d'épinglé pour l'instant. Touchez le cœur sur une série.</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:220px 1fr 1fr;gap:20px;align-items:start;padding:22px 0;border-top:1px solid var(--color-neutral-300);border-bottom:2px solid var(--color-divider)">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="font:700 15px/1.2 Archivo,sans-serif;color:var(--color-text)">PlaydLogoMark · PlaydAvatar</div>
+<div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:var(--color-accent-700)">withWordmark · avatar 52 · 38</div>
+<div style="font:400 12px/1.4 Archivo,sans-serif;color:var(--color-neutral-700)">Le P jaune se pose toujours sur son canevas gris #2a2a2a, comme l'icône d'app — jamais à nu sur le fond de l'écran. Grille 2 × 3, cinq cellules dans l'ordre de la rampe logo. Identique en clair et en sombre.</div>
+</div>
+<div style="background:#000;padding:16px;display:flex;align-items:center;gap:20px">
+<div style="display:flex;align-items:center;gap:8px">
+<div style="width:34px;height:34px;flex:none;background:#2a2a2a;display:flex;align-items:center;justify-content:center"><div style="display:grid;grid-template-columns:repeat(2,7px);grid-template-rows:repeat(3,7px)"><div style="background:#ffd60f"></div><div style="background:#f8c608"></div><div style="background:#f4b909"></div><div style="background:#eeae08"></div><div style="background:#e8a30a"></div><div></div></div></div>
+<div style="font:800 15px/1 Archivo,sans-serif;letter-spacing:-.02em;color:#fff">PLAYD</div>
+</div>
+<div style="width:52px;height:52px;border-radius:50%;border:2px solid #fff;background:#1a1a1a"></div>
+<div style="width:38px;height:38px;border-radius:50%;background:#efbe4e;display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2.2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></div>
+</div>
+<div style="background:#fff;padding:16px;display:flex;align-items:center;gap:20px">
+<div style="display:flex;align-items:center;gap:8px">
+<div style="width:34px;height:34px;flex:none;background:#2a2a2a;display:flex;align-items:center;justify-content:center"><div style="display:grid;grid-template-columns:repeat(2,7px);grid-template-rows:repeat(3,7px)"><div style="background:#ffd60f"></div><div style="background:#f8c608"></div><div style="background:#f4b909"></div><div style="background:#eeae08"></div><div style="background:#e8a30a"></div><div></div></div></div>
+<div style="font:800 15px/1 Archivo,sans-serif;letter-spacing:-.02em;color:#141312">PLAYD</div>
+</div>
+<div style="width:52px;height:52px;border-radius:50%;border:2px solid #141312;background:#e4e1dc"></div>
+<div style="width:38px;height:38px;border-radius:50%;background:#efbe4e;display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#201e1d" stroke-width="2.2" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></div>
+</div>
+</div>
+
+</div>
+
+<div style="width:100%;max-width:1240px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;align-items:baseline;gap:14px;padding-bottom:10px;border-bottom:2px solid var(--color-divider)">
+<div style="font:800 11px/1 Archivo,sans-serif;letter-spacing:.18em;color:var(--color-accent-700)">05</div>
+<div style="font:800 26px/1 Archivo,sans-serif;letter-spacing:-.02em;color:var(--color-text)">Cible d'export : package melos <span style="font:600 20px/1 ui-monospace,Menlo,monospace">ui_kit</span></div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:34px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">Arborescence visée</div>
+<div style="background:var(--color-neutral-100);border:1px solid var(--color-neutral-300);padding:16px;font:400 12.5px/1.75 ui-monospace,Menlo,monospace;color:var(--color-text);white-space:pre">packages/ui_kit/
+  lib/
+    ui_kit.dart
+    src/
+      theme/
+        playd_colors.dart      → tokens couleur (dark/light)
+        playd_typography.dart  → PlaydText.*
+        playd_tokens.dart      → space / radius / elevation / motion
+        playd_theme.dart       → PlaydTheme.dark · PlaydTheme.light
+      components/
+        playd_button.dart
+        playd_chip.dart
+        playd_text_field.dart
+        playd_switch.dart
+        playd_glass_tabs.dart
+        playd_setting_row.dart
+        playd_section_header.dart
+        playd_media_row.dart
+        playd_poster_tile.dart
+        playd_progress_bar.dart
+        playd_stat_card.dart
+        playd_list_card.dart
+        playd_banner.dart
+        playd_dialog.dart
+        playd_toast.dart
+        playd_empty_state.dart
+        playd_logo_mark.dart</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font:700 11px/1 Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--color-neutral-700)">Règles de portage</div>
+<div style="font:400 14px/1.55 Archivo,sans-serif;color:var(--color-neutral-800);text-wrap:pretty">Les tokens sont exposés par un <span style="font:600 13px/1 ui-monospace,Menlo,monospace">ThemeExtension</span> (<span style="font:600 13px/1 ui-monospace,Menlo,monospace">PlaydColors</span>, <span style="font:600 13px/1 ui-monospace,Menlo,monospace">PlaydTokens</span>) : aucun composant ne code une couleur en dur, tout passe par <span style="font:600 13px/1 ui-monospace,Menlo,monospace">Theme.of(context).extension&lt;PlaydColors&gt;()</span>. Le mode sombre est la référence : le clair n'est qu'un second jeu de valeurs pour les mêmes noms.</div>
+<div style="font:400 14px/1.55 Archivo,sans-serif;color:var(--color-neutral-800);text-wrap:pretty">Le verre se rend avec <span style="font:600 13px/1 ui-monospace,Menlo,monospace">BackdropFilter(ImageFilter.blur(sigma: 15))</span> dans un <span style="font:600 13px/1 ui-monospace,Menlo,monospace">ClipRRect</span> à rayon 999, plus la couche de teinte en dégradé — sur fond noir pur, le flou seul ne produit rien. Prévoir un repli opaque (<span style="font:600 13px/1 ui-monospace,Menlo,monospace">surface.raised</span> à 92 %) quand la transparence est désactivée.</div>
+<div style="font:400 14px/1.55 Archivo,sans-serif;color:var(--color-neutral-800);text-wrap:pretty">Contrainte de densité : toute cible tactile ≥ 44 px, rayon par défaut 0, et jamais plus de deux niveaux de surface empilés (base → sunken → raised).</div>
+</div>
+</div>
+</div>
+
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1340,&quot;height&quot;:1000}}"></script>
+</body>
+</html>
