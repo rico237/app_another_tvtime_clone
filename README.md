@@ -1,4 +1,6 @@
-# Playd
+# Playd - R.I.P. TVTime
+
+*This project is mainly vibe coded using Claude AI (Back & Front) - few manual changes are made*
 
 *Lisez-moi · github.com/playd-app/playd*
 
