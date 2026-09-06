@@ -45,11 +45,11 @@ un vrai backend multi-tenant + une intégration de paiement, un chantier à part
 | Framework | **Flutter 3.47.0 / Dart 3.13.0**, géré via `fvm` (setup `fvm flutter doctor` à finaliser sur la machine de dev) | Version cible validée par l'utilisateur. À figer dans `.fvmrc` à la racine du projet Flutter pour que tout contributeur self-hosteur ait la même. **Plancher OS relevé par Flutter 3.47 lui-même : iOS minimum 15** (avant 13) — à répercuter dans `ios/Runner`'s deployment target au scaffolding (vérifié sur flutter.dev/blog, "What's new in Flutter 3.47"). Pas de plancher Android officiel documenté par cette version ; à vérifier au scaffolding (`android/app/build.gradle`, `minSdkVersion`) plutôt que supposer. |
 | Gestion d'état | **Bloc/Cubit** (`flutter_bloc`, `bloc`, `equatable`) | Choix de l'utilisateur (senior Flutter, plus à l'aise avec Bloc). Séparation stricte events/states, bon fit avec une architecture en packages par feature (voir monorepo ci-dessous). |
 | Injection de dépendances | **get_it** (service locator) | Choix de l'utilisateur. Chaque `feat_xxx` expose une fonction d'enregistrement (`registerFeatAuth(GetIt it)` — `AuthApi`, `AuthRepositoryImpl` bindée à l'interface `AuthRepository` de `domain/`, en `registerLazySingleton`), appelée depuis `bootstrap.dart` de l'app au démarrage. Les Cubits/Blocs de `presentation/` résolvent leurs dépendances via `getIt<AuthRepository>()` (jamais via un import direct de `feat_xxx`/`data`, qui reste inconnu de `presentation/`) — voir §3 et la règle de dépendance du §2. |
-| Monorepo / gestion des features | **Melos**, un package Dart/Flutter par feature (convention `feat_xxx`, ex. `feat_auth`, `feat_catalog`, `feat_tracking`, `feat_lists`, `feat_stats`, `feat_import`, **`feat_hosting`** — choix du mode self-hosted/abonnement géré, voir §1 et §4 ; pour ce premier scaffolding, seule la partie self-hosted de `feat_hosting` est construite, l'abonnement/paiement est différé mais le package existe déjà pour l'accueillir sans restructuration), chacun structuré en interne avec des **dossiers** `data/`/`domain/`/`presentation/` (pas des packages séparés — choix explicite de l'utilisateur), plus trois packages transverses (le tier `shared` de l'image de référence) : **`ui_kit`** (design system — widgets purement visuels, sans logique métier, types primitifs uniquement), **`api_client`** (client HTTP : Dio, intercepteur JWT access/refresh, exceptions réseau typées — aucune logique métier, ne connaît que le contrat HTTP) et **`shared`** (router, storage, config, + widgets partagés à logique métier — le seul endroit pour du code partagé entre plusieurs `feat_xxx` qui, sinon, provoquerait un import cyclique entre deux features) | Choix de l'utilisateur, aligné sur le schéma clean architecture fourni (tier `shared` = `ui_kit` + `api_client`). Isole chaque feature (deps, tests, versioning) au lieu d'un simple découpage par dossiers dans une seule app, sans pousser jusqu'à un package par couche à l'intérieur d'une feature ; `melos bootstrap`/`melos run` pour orchestrer build/lint/test sur tous les packages du workspace. `ui_kit`/`api_client`/`shared` évitent que le partage de widgets/réseau/code entre features ne redevienne un couplage direct feature-à-feature. |
+| Monorepo / gestion des features | **Melos**, un package Dart/Flutter par feature (convention `feat_xxx`, ex. `feat_auth`, `feat_catalog`, `feat_tracking`, `feat_lists`, `feat_stats`, `feat_import`, **`feat_hosting`** — choix du mode self-hosted/abonnement géré, voir §1 et §4 ; pour ce premier scaffolding, seule la partie self-hosted de `feat_hosting` est construite, l'abonnement/paiement est différé mais le package existe déjà pour l'accueillir sans restructuration), **`feat_settings`** — hub des réglages, voir §3/§7 : ne stocke aucune donnée d'une autre feature, seulement les réglages génériques (thème, langue) et la composition/navigation vers les écrans que chaque feature possède déjà (Compte, Hébergement, etc.) via le pattern Module + callbacks), chacun structuré en interne avec des **dossiers** `data/`/`domain/`/`presentation/` (pas des packages séparés — choix explicite de l'utilisateur), plus trois packages transverses (le tier `shared` de l'image de référence) : **`ui_kit`** (design system — widgets purement visuels, sans logique métier, types primitifs uniquement), **`api_client`** (client HTTP : Dio, intercepteur JWT access/refresh, exceptions réseau typées — aucune logique métier, ne connaît que le contrat HTTP) et **`shared`** (router, storage, config, + widgets partagés à logique métier — le seul endroit pour du code partagé entre plusieurs `feat_xxx` qui, sinon, provoquerait un import cyclique entre deux features) | Choix de l'utilisateur, aligné sur le schéma clean architecture fourni (tier `shared` = `ui_kit` + `api_client`). Isole chaque feature (deps, tests, versioning) au lieu d'un simple découpage par dossiers dans une seule app, sans pousser jusqu'à un package par couche à l'intérieur d'une feature ; `melos bootstrap`/`melos run` pour orchestrer build/lint/test sur tous les packages du workspace. `ui_kit`/`api_client`/`shared` évitent que le partage de widgets/réseau/code entre features ne redevienne un couplage direct feature-à-feature. |
 | Applications (multi-app) | Le repo héberge **deux apps** consommant les mêmes packages `feat_xxx`/`shared`/`ui_kit`/`api_client` : **`playd`** (nom de marque, ex-`tvtime_clone` — voir §1), l'instance de référence maintenue par le projet, et **`template_app`**, un squelette minimal destiné à être forké par quiconque veut créer sa propre app self-hostée à partir de ce projet | Choix de l'utilisateur : projet open source, donc prévoir dès l'architecture que d'autres personnes forkent pour créer leur propre app plutôt que de devoir extraire cette possibilité après coup. `template_app` ne contient que le strict nécessaire à personnaliser (nom, icône, accent couleur, `API_BASE_URL` par défaut) — toute la logique vit dans les packages partagés, jamais dupliquée entre apps. |
 | Feature flags par app | Un objet statique par app (`AppFeatures`, ex. `apps/playd/lib/app/app_features.dart`) qui active/désactive chaque `feat_xxx` **à la compilation** — consulté par `bootstrap.dart` (n'enregistre dans get_it que les features actives, voir ligne Injection de dépendances) et par le router de `shared` (n'expose les routes/l'onglet de nav que si la feature est active). Prévoit aussi des **sous-flags à l'intérieur d'une feature** (pas seulement toute/rien) : `feat_hosting` a un sous-flag `cloudSubscriptionEnabled` (faux dans les deux apps pour ce premier scaffolding — seule la partie self-hosted du hosting-mode est construite, voir §1/§4), pour ajouter l'abonnement plus tard sans réactiver toute la feature d'un coup. | Choix de l'utilisateur. Sert directement le cas `template_app` : un forkeur peut désactiver `import` (spécifique à la migration TV Time) ou toute autre feature sans toucher au code des packages. Volontairement statique/compile-time, jamais un service de feature-flag distant (LaunchDarkly, Firebase Remote Config...) — ce serait une dépendance tierce payante/verrouillante, contraire à la golden rule du §1. **⚠️ Point à vérifier au scaffolding, pas encore acquis** : pour un vrai gain de taille de binaire (et pas juste "caché à l'écran"), le toggle doit empêcher l'**import** du code de la feature désactivée, pas seulement un `if` runtime autour d'un import déjà présent dans l'app — Dart ne tree-shake que du code jamais référencé. Il faudra valider concrètement (ex. build avec une feature désactivée + inspection de la taille de l'AOT snapshot / `flutter build apk --analyze-size`, ou génération du fichier `app_features.dart` par app plutôt qu'un flag lu à l'exécution) avant de considérer l'économie de taille acquise — sinon le flag ne fait que masquer l'UI, ce qui reste utile mais n'est pas la même promesse. |
 | Scaffolding | **very_good_cli** (`very_good create flutter_app` pour chaque app, `very_good create flutter_package` pour `shared`/`ui_kit`/`api_client`/chaque `feat_xxx`) | Outil déjà installé sur la machine, choix de l'utilisateur. Génère une structure testée par défaut (lint, tests, CI templates) cohérente avec une organisation Melos. |
-| Navigation | **go_router** | Standard de facto, deep-linking simple (utile plus tard pour "ouvrir une série depuis une notif"), déclaratif. |
+| Navigation | **go_router** dans `shared` pour les routes top-level, les guards, **et les routes de destination deep-linkables** (`/settings/server`, `/movies/:tmdbId`, `/shows/:tmdbId/seasons/:n/episodes/:m`, etc. — déclarées par chaque `feat_xxx` propriétaire de l'écran, assemblées par l'app, voir §7) ; **la coordination inter-features** (ce qui n'a pas besoin d'URL, ex. enchaîner Setup → Login) **passe séparément par le pattern "Module + callbacks" avec lazy-loading** (voir §7) — l'app (composition root) instancie le `FeatXxxModule` de chaque feature (importé en `deferred as`) et lui passe des callbacks typés ; aucune feature ne connaît le nom d'une route ou l'existence d'une autre feature | Standard de facto pour go_router (deep-linking, déclaratif). Le pattern Module + callbacks est tranché en plus, pas à la place : il évite qu'une feature ait besoin de connaître les routes d'une autre pour un enchaînement métier interne (voir §4) — et permet le lazy-loading par feature en prime. Les deux mécanismes coexistent : callbacks pour le séquencement, routes go_router pour tout ce qui doit rester atteignable directement par une URI (voir §7, "Deep-linking"). |
 | Client HTTP | **dio** | Intercepteurs pour le JWT (attache le `Authorization: Bearer`, refresh silencieux sur 401), gestion fine des erreurs réseau, upload multipart pour l'import `.zip`. |
 | Modèles / sérialisation | **freezed** + **json_serializable** (freezed n'inclut pas json_serializable : ce sont deux packages séparés — freezed génère les classes immuables/unions/`copyWith`, json_serializable génère `fromJson`/`toJson` ; freezed s'y intègre nativement via un seul `part '*.freezed.dart'` + `part '*.g.dart'`, mais les deux dépendances restent nécessaires) | Les DTOs du backend sont typés (Swagger) ; on veut des modèles Dart immuables générés plutôt que du parsing JSON manuel, pour rester synchro avec le contrat API et détecter les breaking changes à la compilation. |
 | Stockage sécurisé | **flutter_secure_storage** | Access/refresh tokens en Keychain/Keystore, jamais en `SharedPreferences` en clair. |
@@ -73,7 +73,7 @@ Le monorepo Melos impose un graphe d'import strict, dans un seul sens (pas de cy
                        playd  /  template_app
         ┌─────────────────┼─────────────────────────┐
         ▼                 ▼                          ▼
-     shared           feat_xxx (auth, catalog, tracking, lists, stats, import, hosting)
+     shared           feat_xxx (auth, catalog, tracking, lists, stats, import, hosting, settings)
         │  │              │        │        │
         │  └──────►api_client◄─────┘        │
         └───────────►ui_kit◄─────────────────┘
@@ -81,7 +81,8 @@ Le monorepo Melos impose un graphe d'import strict, dans un seul sens (pas de cy
 
 - **Une app** (`playd`, `template_app`) importe tous les packages (`shared`, `ui_kit`,
   `api_client`, tous les `feat_xxx`) — c'est le seul endroit où tout est assemblé (DI, router,
-  thème, agrégation des localisations).
+  thème, agrégation des localisations, et câblage des callbacks entre les `FeatXxxModule` de
+  chaque feature, voir §7).
 - **`shared`** importe `ui_kit` et `api_client` — jamais un `feat_xxx` (sinon cycle : un `feat_xxx`
   qui importe `shared` importerait indirectement une autre feature).
 - **`ui_kit`** et **`api_client`** n'importent ni `shared` ni aucun `feat_xxx` — ce sont les deux
@@ -117,7 +118,10 @@ app_another_tvtime_clone/
       lib/
         app/
           app.dart               # App widget : MaterialApp.router, thème, agrégation des
-                                   # localizationsDelegates de chaque feat_xxx
+                                   # localizationsDelegates de chaque feat_xxx, ET câblage des
+                                   # callbacks entre les FeatXxxModule (voir §7, pattern Module +
+                                   # callbacks) — c'est le seul endroit qui connaît la séquence
+                                   # de navigation inter-features (ex. about → setup → login)
           app_features.dart      # AppFeatures : quelles feat_xxx sont actives pour CETTE app
                                    # (voir §2, ligne Feature flags par app) — consulté par
                                    # bootstrap.dart et par le router de shared
@@ -173,7 +177,9 @@ app_another_tvtime_clone/
     shared/                      # scaffold `very_good create flutter_package`
       lib/
         src/
-          router/                 # go_router config + guards (auth requise ou non)
+          router/                 # go_router : routes top-level de l'app + guards (auth requise ou
+                                    # non). Ne connaît PAS la séquence métier entre features (voir
+                                    # §7, pattern Module + callbacks) — juste le squelette de nav.
           storage/                 # wrapper flutter_secure_storage (tokens) + wrapper
                                     # shared_preferences (prefs d'affichage, adresse serveur)
           config/                  # lecture des --dart-define (API_BASE_URL, etc.)
@@ -196,6 +202,9 @@ app_another_tvtime_clone/
                                     # AuthRepository (abstract)
           presentation/             # Cubits/Blocs + écrans/widgets (login, register) — ne
                                     # dépend que de domain/, jamais directement de data/
+            feat_auth_module.dart    # FeatAuthModule({required VoidCallback onAuthenticated, ...})
+                                       # — point d'entrée unique de la feature, importé en
+                                       # `deferred as` par l'app (voir §7, Module + callbacks)
         l10n/
           arb/
             feat_auth_en.arb        # traductions propres à cette feature
@@ -224,6 +233,17 @@ app_another_tvtime_clone/
                                         # ce scaffolding) ; écrans abonnement/paiement/factures
                                         # (différés, voir §1/§4) derrière
                                         # AppFeatures.cloudSubscriptionEnabled
+    feat_settings/                     # hub des réglages — PAS de données propres, uniquement :
+      lib/src/presentation/
+        hub/                              # écran d'index (Compte, Hébergement, Services, etc.) —
+                                            # chaque rangée navigue via un callback du
+                                            # FeatSettingsModule, jamais un import direct de la
+                                            # feature propriétaire de l'écran cible
+        app_prefs/                         # seuls écrans dont feat_settings est VRAIMENT
+                                            # propriétaire : thème, langue, mode liste/grille par
+                                            # défaut — lus/écrits via shared/storage
+                                            # (shared_preferences), rien de spécifique à une feature
+      # domain/ et data/ minimaux ou absents : pas d'entité propre à synchroniser avec le backend
 ```
 
 Chaque `feat_xxx` respecte, en interne, la même direction de dépendance que le graphe du §2 :
@@ -231,6 +251,11 @@ Chaque `feat_xxx` respecte, en interne, la même direction de dépendance que le
 HTTP, `presentation/` ne dépend que de `domain/` (jamais directement de `data/` — le branchement
 concret se fait dans l'app via `get_it`, voir §2). Jamais d'import direct vers un autre
 `feat_xxx`, jamais vers une app. Le partage inter-features passe systématiquement par `shared`.
+
+Chaque `feat_xxx` expose aussi, dans `presentation/`, un `FeatXxxModule` (ex.
+`feat_auth_module.dart` ci-dessus) — c'est le pattern "Module + callbacks" du §7, pas répété pour
+chaque feature dans cette arborescence pour rester lisible : même principe pour `feat_catalog`,
+`feat_tracking`, `feat_lists`, `feat_stats`, `feat_import`, `feat_hosting`, `feat_settings`.
 
 ## 4. Mapping fonctionnalités ↔ endpoints backend
 
@@ -286,10 +311,10 @@ suite : le README seul ne suffit pas toujours, le prototype fait foi en cas de d
    auto-hébergé (gratuit, adresse serveur à fournir) ou Cloud Playd (payant, rien à installer, 1
    mois d'essai gratuit sans carte — voir FYI plus bas). Si auto-hébergé : champ adresse + bouton
    "Tester la connexion" (→ `GET /health`, voir doc backend) + résultat coloré. CTA "Continuer".
-   **Ce choix est celui de `feat_hosting`, pas de `feat_auth`** — le routeur de `shared` enchaîne
-   `feat_hosting` (about → setup) → `feat_auth` (login), les deux features ne s'importent jamais
-   entre elles (voir §2, règle de dépendance) ; go_router est le seul endroit qui connaît la
-   séquence.
+   **Ce choix est celui de `feat_hosting`, pas de `feat_auth`** — les deux features ne s'importent
+   jamais entre elles (voir §2, règle de dépendance) ; c'est l'app (composition root) qui enchaîne
+   `FeatHostingModule` (about → setup) → `FeatAuthModule` (login) via callbacks typés, pattern
+   "Module + callbacks" avec lazy-loading — voir §7.
 2. **Login** — email + mot de passe, lien "mot de passe oublié", lien "changer" (revient à l'écran
    1), lien vers register.
 3. **Register** — email, username, mot de passe + confirmation (règle : 10 caractères minimum).
@@ -304,25 +329,7 @@ suite : le README seul ne suffit pas toujours, le prototype fait foi en cas de d
 déconnecter ?", compte affiché, action destructive rouge vs "Rester connecté") avant d'appeler
 `POST /auth/logout` et de revenir à l'écran login.
 
-**⚠️ TMDB — pas cohérent entre deux écrans du même handoff** : l'écran Réglages →
-**Hébergement** (le menu principal) a maintenant un vrai encart pédagogique ("Elle se renseigne sur
-le serveur, pas dans l'app", exemple `TMDB_API_KEY=votre_clé # .env du serveur`, lien externe vers
-un futur `docs/SELF_HOSTING.md`) — **exactement la bonne explication**, aucun champ de saisie sur
-cet écran. Mais l'écran Réglages → **Serveur** (une sous-page différente, atteinte depuis le même
-menu) a **toujours** un champ `Clé API TMDB (côté serveur)` de type mot de passe où l'utilisateur
-est invité à taper une valeur — la relabellisation ("côté serveur") et le nouveau hint ne
-suppriment pas la contradiction : deux écrans de la même hiérarchie de réglages se contredisent
-sur le fait qu'il existe, ou non, un champ à remplir. Les deux lectures possibles restent celles du
-paragraphe "Écarts" ci-dessous, **avec maintenant une piste concrète pour l'option 1** (supprimer le
-champ) : le lien "tutoriel d'auto-hébergement" de l'écran Hébergement pourrait tout simplement
-remplacer le champ de l'écran Serveur.
-
-**Documentation (README, tutoriels)** : **décision finale, revenue à ce que fait déjà le handoff**
-— pas de rendu Markdown in-app (ça alourdirait le binaire pour un besoin ponctuel), chaque doc est
-une carte `PlaydBanner` (déjà dans le design system) écrite en dur + un lien externe (`url_launcher`)
-vers la page GitHub **rendue** (pas l'URL Markdown brute). Réutilisable pour le README, le futur
-tutoriel clé TMDB, et le futur tutoriel self-hosting, sans nouveau composant `ui_kit` à concevoir.
-Voir §2 (ligne Documentation) et §3 (`feat_hosting`).
+**Clé TMDB et documentation** : voir "Écarts identifiés" ci-dessous, décisions prises.
 
 **FYI, pas une décision d'archi** : Cloud Playd affiche maintenant un **essai gratuit d'un mois
 sans carte** (`trialUsed`/`trialDaysLeft`) avant de passer à l'abonnement à 3 €/mois — détail
@@ -350,49 +357,66 @@ toute la feature abonnement reste différée (voir plus bas).
 - **Préférences d'affichage par titre** ("masquer les épisodes vus" pour une série, "masquer de la
   filmothèque" pour un film, via le menu Personnaliser ou Réglages → Bibliothèque séries/films) et
   **services de streaming préférés** (Réglages → Services d'abonnement, ordre d'affichage dans "Où
-  regarder") : **décision revue** — la version précédente disait "restent locales à l'appareil,
-  `shared_preferences`", mais du pur local sans sync signifie **tout perdre au changement de
-  téléphone/réinstall** (remarque de l'utilisateur, correcte). Pour rester cohérent avec "le
-  backend est la seule source de vérité, pas de mode local pur" (§8), ces préférences doivent
-  **devenir des champs backend** comme le compteur de complétions de liste : `hideWatchedEpisodes`
+  regarder") : du pur local sans sync signifierait **tout perdre au changement de téléphone/
+  réinstall**. Pour rester cohérent avec "le backend est la seule source de vérité, pas de mode
+  local pur" (§8), ces préférences **sont des champs backend** comme le compteur de complétions de
+  liste : `hideWatchedEpisodes`
   (booléen sur `UserShow`, ou son équivalent film une fois le statut film résolu ci-dessous),
   `preferredWatchProviders` (champ sur `User`, tableau d'identifiants de provider). Seules les
   préférences vraiment anodines à reconfigurer en quelques secondes (thème, langue, mode liste/
   grille, lecture auto — voir §2 `shared_preferences`) restent purement locales : la distinction
   n'est pas "c'est un réglage d'affichage" mais "ça a coûté un effort à configurer et ça ferait mal
   à perdre".
-- **Statut favori/watchlist pour les films — gap découvert en creusant cette question** : le
-  handoff prévoit "Favoris" et "Regarder plus tard" pour les films via le même menu `···` que les
-  séries (voir §4, table, et la page "Films préférés"), mais **vérifié dans le schema** :
-  `Movie` n'a que `watchEvents`/`ratings`, aucun équivalent de `UserShow` (pas de
-  `isFavorite`/`isWatchlist`/`isArchived` pour un film). Contrairement aux items ci-dessus, ce
-  n'est pas juste un champ à ajouter : ça manque une table entière côté backend. **Bloque
+  **Propriété des écrans** (voir §3, `feat_settings`) : "Bibliothèque séries/films"
+  (`hideWatchedEpisodes`/`hiddenFromLibrary`) appartient à **`feat_tracking`** (le champ vit sur
+  `UserShow`/`UserMovie`, que `feat_tracking` possède déjà). "Services de streaming préférés"
+  (`preferredWatchProviders`) appartient à **`feat_catalog`** (l'écran a besoin de la liste des
+  providers disponibles, une donnée catalog) — ce deuxième point est ma recommandation, pas une
+  certitude : `preferredWatchProviders` vit sur `User` comme `language`/`timezone`, donc
+  `feat_auth` serait aussi défendable ; à corriger si tu préfères l'autre option, sinon considéré
+  tranché. Dans les deux cas, `feat_settings` n'affiche qu'une rangée dans son hub et délègue
+  l'écran réel à la feature propriétaire via un callback (voir §7, Module + callbacks) — il ne
+  duplique ni ne stocke ces préférences lui-même.
+- **Statut favori/watchlist pour les films — gap confirmé, forme tranchée** : le handoff prévoit
+  "Favoris" et "Regarder plus tard" pour les films via le même menu `···` que les séries (voir §4,
+  table, et la page "Films préférés"), mais **vérifié dans le schema** : `Movie` n'a que
+  `watchEvents`/`ratings`, aucun équivalent de `UserShow`. Contrairement aux items ci-dessus, ce
+  n'est pas juste un champ à ajouter : il manque une table entière côté backend. **Bloque
   réellement** la page "Films préférés" et l'entrée "Regarder plus tard" du menu `···` pour un
   film — à traiter avant de construire ces écrans précis, pas un blocage pour le reste de `tracking`.
+  **Forme du nouveau modèle** : `UserMovie { userId, movieId, isFavorite, isWatchlist,
+  hiddenFromLibrary }` — pas quatre booléens comme `UserShow`. Pas de `isFollowing` (un film n'a
+  rien à "suivre" épisode par épisode, contrairement à une série) ni de champ "vu" dédié : le
+  statut vu/pas vu d'un film **reste dérivé de l'existence d'un `WatchEvent`**, exactement comme
+  aujourd'hui (`POST/DELETE /movies/:tmdbId/watch`) — aucun nouveau champ pour ça, on réutilise ce
+  qui existe déjà plutôt que dupliquer l'information. **Ce n'est pas qu'un choix de conception
+  abstrait : c'est déjà littéralement le format que produit l'import GDPR TV Time**, vérifié
+  directement dans `import.service.ts` (`importWatchEvents`/`importRewatches`, backend) — l'import
+  crée des lignes `WatchEvent { userId, movieId ou episodeId, watchedAt }` à partir de
+  `tracking-prod-records.csv`/`rewatched_episode.csv` (un revisionnage = une ligne `WatchEvent`
+  supplémentaire avec un autre `watchedAt`, pas un compteur séparé) — donc un utilisateur qui migre
+  son historique TV Time retrouve son "vu" exactement dans le champ que l'app lit déjà pour tout le
+  reste du tracking, sans format parallèle à réconcilier. `hiddenFromLibrary` est l'équivalent film de
+  `hideWatchedEpisodes` sur `UserShow` (ci-dessus) — "masquer de la filmothèque" avait déjà été
+  identifié comme ayant besoin d'un foyer une fois ce modèle créé, le voilà. Pas de `isArchived`
+  pour l'instant (pas d'équivalent "arrêter de regarder" identifié pour un film dans le handoff) —
+  à ajouter le jour où un besoin concret apparaît, pas par symétrie avec `UserShow`.
 - **Adresse du serveur éditable à l'exécution** : le handoff a un écran Réglages → Serveur qui
   permet de saisir/tester l'adresse du backend self-hosted **sans recompiler l'app** — c'est mieux
   que notre approche actuelle (uniquement `--dart-define` à la compilation). **À adopter** : garder
   `--dart-define` comme valeur par défaut (utile pour `template_app`), mais la rendre modifiable et
   persistée localement (`shared_preferences`) depuis les réglages — voir §2, ligne Config
   d'environnement, mise à jour en conséquence.
-- **⚠️ Champ "Clé API TMDB" côté app — pas résolu, deux écrans du handoff se contredisent** :
-  l'écran Réglages → **Hébergement** a un encart pédagogique complet (exemple `.env`, lien vers un
-  tutoriel) et aucun champ de saisie — la bonne explication. Mais l'écran Réglages → **Serveur**,
-  atteint depuis le même menu, a **toujours** un champ de saisie `Clé API TMDB` (`type: password`)
-  qui contredit directement cet encart. Deux lectures possibles, **à trancher avec toi, pas supposé
-  ici** :
-  1. Le champ de l'écran Serveur est un reliquat à supprimer — l'app ne demande que l'adresse du
-     serveur partout, la clé TMDB se configure exclusivement via `.env`/`docker-compose` côté
-     déploiement (cohérent avec l'architecture backend actuelle, aucun changement requis). Le
-     handoff donne une piste concrète pour cette option : remplacer le champ par le même lien vers
-     le tutoriel d'auto-hébergement que sur l'écran Hébergement.
-  2. Le champ doit rester, et l'app doit réellement pouvoir configurer la clé TMDB de son propre
-     serveur à distance — ce qui suppose un **nouvel endpoint backend admin/config** (non authentifié
-     par JWT utilisateur classique, plutôt une auth "propriétaire de l'instance") pour écrire
-     `TMDB_API_KEY`, absent aujourd'hui et pas anodin à sécuriser (c'est un secret d'infrastructure,
-     pas une donnée utilisateur).
-  L'option 1 est la plus cohérente avec tout ce qui a été acté jusqu'ici (golden rule, backend
-  source de vérité, pas de complexité inutile) — recommandation, pas une décision prise à ta place.
+- **Champ "Clé API TMDB" côté app — tranché : supprimé.** L'écran Réglages → Serveur ne demande
+  que l'adresse du backend, jamais de clé TMDB (le champ `type: password` du handoff n'est pas
+  reproduit) — la clé se configure exclusivement via `.env`/`docker-compose` côté déploiement,
+  cohérent avec l'architecture backend actuelle (aucun changement backend requis). Le lien
+  "tutoriel d'auto-hébergement" de l'écran Hébergement remplace le champ. Deux corrections de copie
+  à faire par rapport au handoff, pour rester cohérent avec cette décision : la carte "Auto-hébergé"
+  de l'écran Setup dit encore "adresse **et clé TMDB** à fournir" (à corriger en "adresse à fournir
+  — la clé TMDB se configure sur le serveur", comme le fait déjà l'écran Hébergement) ; l'écran
+  Explorer a un renvoi "la clé d'API se règle dans Paramètres › Hébergement" (à corriger de la même
+  façon, puisqu'il n'y a plus de "clé à régler" dans l'app).
 - **Documentation (README, tutoriels) — décision finale** : pas de rendu Markdown in-app ni de docs
   embarquées (ça alourdirait le binaire pour un besoin ponctuel, le texte des docs lui-même étant
   négligeable en taille). Revient à ce que fait déjà le handoff : cartes `PlaydBanner` écrites en
@@ -409,13 +433,12 @@ toute la feature abonnement reste différée (voir plus bas).
   historique synchronisé multi-appareils serait une vraie feature backend à part, pas nécessaire
   au MVP.
 
-### Fonctionnalité prévue, différée : hébergement + abonnement (précisé après le §4)
+### Fonctionnalité prévue, différée : hébergement + abonnement
 
-Contrairement à ce que disait la version précédente de cette section, le mode "cloud géré" +
-abonnement du handoff **n'est pas un non-objectif** : le projet publiera l'app sur les stores avec
-un vrai choix pour l'utilisateur — self-hosting gratuit ou abonnement payant à une offre hébergée
-gérée par le projet (voir §1, golden rule). Ça change ce qui était écrit au §8 (corrigé). Ce qui
-reste vrai, en revanche : ce n'est **pas construit dans ce premier scaffolding**.
+Le mode "cloud géré" + abonnement du handoff **n'est pas un non-objectif** : le projet publiera
+l'app sur les stores avec un vrai choix pour l'utilisateur — self-hosting gratuit ou abonnement
+payant à une offre hébergée gérée par le projet (voir §1, golden rule ; voir aussi §8). Ce qui est
+vrai, en revanche : ce n'est **pas construit dans ce premier scaffolding**.
 
 - **Ce qui est construit maintenant** : `feat_hosting` avec le choix de mode et l'écran self-hosted
   (adresse serveur, test de connexion) — voir §2/§3.
@@ -456,11 +479,9 @@ Le backend modélise le statut d'une série suivie avec **quatre booléens indé
 ("Favoris", "Regarder plus tard", "Arrêter de regarder / Reprendre", "Supprimer") correspond à
 `isFavorite`/`isWatchlist`/`isArchived`/`DELETE /tracking/shows/:tmdbId` (voir §4). "Partager" est
 purement client (copie presse-papiers, pas d'appel backend). "Personnaliser" (notifications,
-masquer les épisodes vus) n'a pas d'équivalent backend, mais **n'est pas hors périmètre** : c'est
-une préférence d'affichage locale résolue au §4/§2 (`shared_preferences`, non synchronisée pour le
-v1) — mise à jour depuis la version précédente de cette section, qui la classait par erreur comme
-hors périmètre faute d'avoir vu concrètement ce qu'elle fait. Le modèle Dart `ShowTrackingStatus`
-doit rester quatre booléens, pas un enum, pour matcher exactement le DTO
+masquer les épisodes vus) est dans le périmètre : `hideWatchedEpisodes` est un champ backend sur
+`UserShow`, l'écran est possédé par `feat_tracking` (voir §4, Écarts, et §3). Le modèle Dart
+`ShowTrackingStatus` doit rester quatre booléens, pas un enum, pour matcher exactement le DTO
 `PATCH /tracking/shows/:tmdbId`.
 
 ## 6. Thème
@@ -471,11 +492,9 @@ pixel/à la milliseconde près via `ui_kit` (**sauf la nav bar**, voir plus bas)
 l'intégralité des tableaux de tokens ici — le handoff en a déjà une version complète, prête à
 l'emploi ; ce qui suit n'est qu'un résumé structurant.
 
-- **Thème double, dark + light, tous deux de premier plan** — correction d'une version précédente
-  de cette section qui disait "pas de mode clair, non prioritaire" : le handoff donne les **deux
-  jeux de valeurs pour les mêmes tokens** (dark canonique, light dérivé), pas un Material 3
-  générique en roue de secours. `PlaydTheme.dark` / `PlaydTheme.light`, choix system/manuel via
-  `ThemeMode`.
+- **Thème double, dark + light, tous deux de premier plan** : le handoff donne les **deux jeux de
+  valeurs pour les mêmes tokens** (dark canonique, light dérivé), pas un Material 3 générique en
+  roue de secours. `PlaydTheme.dark` / `PlaydTheme.light`, choix system/manuel via `ThemeMode`.
 - **Tokens couleur, par catégorie** (noms exacts dans `PlaydColors extends ThemeExtension`, jamais
   de couleur en dur dans un widget) : `surface.*` (base/raised/sunken/inset/media), `border.*`
   (subtle/strong/track), `content.*` (primary/secondary/tertiary/muted), `brand.*` (accent
@@ -540,25 +559,63 @@ que de simples intentions est donc d'autant plus important.
   - Events au **passé** (`LoginSubmitted`, pas `SubmitLogin`) — un event représente quelque chose
     qui s'est déjà produit du point de vue du Bloc/Cubit.
   - States comme des **noms** (photographie à un instant T), pas des verbes.
-  - **Un seul style de state pour tout le projet**, pas un mélange au cas par cas : soit des
-    sous-classes (`AuthInitial`/`AuthSuccess`/`AuthFailure`), soit une classe unique + un enum de
-    statut (`AuthState { status: AuthStatus.initial/success/failure, ... }`) — à choisir au
-    scaffolding et documenter ici une fois choisi.
-  - **`sealed class`** (Dart 3, disponible en 3.13) pour les events et les states de chaque
-    Bloc/Cubit — permet un `switch` exhaustif vérifié à la compilation plutôt que des `if is` en
-    cascade ou un `default` qui masque un cas oublié.
+  - **Tranché : sous-classes générées par `freezed`**, pas de classe unique + enum de statut — un
+    seul style pour tout le projet. Chaque state est une union `freezed` (`AuthState` avec les
+    factories `AuthState.initial()`, `.inProgress()`, `.success(User user)`, `.failure(String
+    message)`, etc.), ce qui donne à la fois des sous-classes nommées (`AuthInitial`/`AuthSuccess`/
+    `AuthFailure` en pratique, générées) et un `switch`/`when`/`map` exhaustif vérifié à la
+    compilation — la génération de code freezed **implique déjà** des classes scellées
+    (`sealed`/`@freezed` union), donc pas besoin d'écrire `sealed class` à la main pour en profiter.
+    Même mécanisme que celui déjà utilisé pour les modèles de domaine (§2, ligne Modèles), pas un
+    deuxième outil de génération à apprendre.
 - **Application mécanique du graphe de dépendance entre packages** (voir §2, "Règles de
   dépendance") : via les contraintes de `pubspec.yaml` dans un Dart/pub workspace — transforme la
   règle "un `feat_xxx` ne doit pas importer un autre `feat_xxx`" en erreur de compilation plutôt
   qu'en convention vérifiée seulement au lint/CI. À mettre en place dès le scaffolding, pas ajouté
   après coup une fois que des violations existent déjà.
-- **Pattern "Module + callbacks" pour la coordination inter-features — à évaluer au scaffolding,
-  pas encore tranché** : alternative/complément à "le routeur de `shared` connaît le nom de toutes
-  les routes" (voir §2/§3, Setup → Login par ex.) — chaque feature exposerait un widget d'entrée
-  recevant des callbacks typés pour la navigation, sans jamais connaître le nom des routes des
-  autres features. Séduisant pour le découplage, mais à confronter concrètement à notre organisation
-  (`shared` connaît déjà toutes les features par construction, donc le gain est moins évident que
-  dans une architecture qui viserait du lazy-loading par feature) avant de l'adopter.
+- **Tranché : pattern "Module + callbacks" pour la coordination inter-features, avec lazy-loading
+  par feature.** Remplace "le routeur de `shared` connaît le nom de toutes les routes" (ancienne
+  description du flow Setup → Login, corrigée ci-dessous). Chaque `feat_xxx/presentation` expose un
+  widget d'entrée (`FeatXxxModule`) qui ne reçoit que des **callbacks typés** pour les actions de
+  navigation qui sortent de la feature (ex. `FeatHostingModule({required VoidCallback onSetupDone})`)
+  — une feature ne connaît jamais le nom d'une route ou l'existence d'une autre feature, seulement
+  la forme de ses propres callbacks. **C'est l'app (composition root, `bootstrap.dart`/`app.dart`)
+  qui possède le graphe de navigation complet** : elle instancie chaque Module et lui passe les
+  callbacks qui pointent vers le Module suivant. `shared/router` garde `go_router` mais son rôle se
+  réduit à héberger les routes top-level de l'app et les guards (auth requise ou non) — il n'a plus
+  besoin de connaître la séquence métier interne (about → setup → login), qui vit maintenant dans
+  le câblage de callbacks au niveau app.
+  - **Lazy-loading** : chaque `FeatXxxModule` est importé en `deferred as` depuis l'app — le code
+    d'une feature n'est chargé qu'au premier accès à son Module, pas au démarrage. Fonctionne même
+    avec notre structure en dossiers (pas un package séparé par feature) puisque `deferred as`
+    s'applique à un import, pas à un package pub — à confirmer concrètement au scaffolding
+    (`flutter build ... --analyze-size` avant/après, même exercice que pour `AppFeatures`, voir
+    Prochaines étapes).
+  - Ce pattern **remplace** la note du §4 selon laquelle "go_router est le seul endroit qui connaît
+    la séquence" (About → Setup → Login) : corrigé, c'est l'app qui la connaît, via les callbacks
+    des Modules `feat_hosting`/`feat_auth`.
+- **Deep-linking : compatible, mais distinct des callbacks de séquencement — à ne pas confondre.**
+  Les callbacks (`onSetupDone`, etc.) répondent à "qu'est-ce qui se passe après cette étape",
+  *pendant* un flow déjà lancé par l'app — jamais ce qu'un deep link ouvre : un deep link (lien
+  d'e-mail de reset password — voir §4, écran 6 —, notification push, schéma `playd://`) arrive
+  comme une URI brute, sans écran précédent, et doit donc résoudre vers une **vraie route nommée et
+  paramétrée** dans `go_router`, pas vers une séquence de callbacks. Exemples concrets qui doivent
+  tous rester des `GoRoute` adressables : `/settings/server` (`feat_hosting`), `/movies/:tmdbId`
+  (`feat_catalog`), `/shows/:tmdbId/seasons/:seasonNumber/episodes/:episodeNumber`
+  (`feat_tracking`), l'écran 6 de reset password lui-même.
+  - **Problème à résoudre pour que ça reste cohérent avec les règles de dépendance (§2)** :
+    `shared` héberge `go_router` mais n'a pas le droit d'importer un `feat_xxx` — donc `shared` ne
+    peut pas connaître ces routes directement. **Solution retenue** : chaque `feat_xxx` qui possède
+    un écran deep-linkable expose, à côté de son `FeatXxxModule`, une petite fonction de
+    déclaration de routes (même principe que `registerFeatXxx()` pour get_it, voir §2) — par
+    exemple `catalogDeepLinkRoutes() → List<RouteBase>`. C'est l'app (composition root, déjà seule
+    à connaître tout le graphe) qui collecte ces listes dans `bootstrap.dart`/`app.dart` et les
+    passe à `shared/router` comme un simple paramètre (`List<RouteBase>`) au moment de construire le
+    `GoRouter` — `shared` reçoit une liste opaque, il n'a jamais besoin d'importer la feature qui
+    l'a produite.
+  - Reste à trancher au scaffolding (détail d'implémentation, pas un choix d'archi) : le package de
+    parsing des deep links OS (`app_links`, ou l'intégration deep-link native de `go_router` seule,
+    suffisante dans bien des cas) — voir §4, écran 6.
 - **Barrel file par écran**, pas seulement par package : en plus du barrel `feat_xxx.dart` déjà
   prévu par package (voir §3), un barrel par écran dans `presentation/` (ex.
   `presentation/login/login.dart` qui réexporte la vue + son Cubit) — prépare un éventuel
@@ -604,8 +661,8 @@ que de simples intentions est donc d'autant plus important.
   HTTP dio pour les réponses catalog) suffit pour l'expérience v1. Le toggle "garder les données
   sur cet appareil" vu dans le handoff (§4) n'est **pas** adopté pour cette raison — le backend
   reste la seule source de vérité, pas de mode local pur en parallèle.
-- **Corrigé** (l'affirmation précédente ici était fausse, voir §1/§4) : le paiement in-app **fait**
-  partie de la même codebase, ce n'est pas un déploiement/flavor à part — l'app publiée sur les
+- Le paiement in-app **fait** partie de la même codebase (voir §1/§4), ce n'est pas un déploiement/
+  flavor à part — l'app publiée sur les
   stores proposera un choix self-hosted gratuit / abonnement payant à une offre hébergée, dans les
   deux apps (`playd` et `template_app`), via `feat_hosting`. Le non-objectif réel : **ne pas
   le construire dans ce premier scaffolding** — `AppFeatures.cloudSubscriptionEnabled` reste faux
